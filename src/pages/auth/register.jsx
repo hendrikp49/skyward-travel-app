@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { API_KEY, BASE_URL } from "../api/config";
 import { useRouter } from "next/router";
+import { REGISTER } from "../api/auth";
 
 const Register = () => {
   const router = useRouter();
@@ -15,15 +16,7 @@ const Register = () => {
     phoneNumber: "",
   });
 
-  /*************  ✨ Codeium Command ⭐  *************/
-  /**
-   * Handles change event of input elements in the register form.
-   * @param {React.ChangeEvent<HTMLInputElement>} e - The change event.
-   * @returns {void} - Nothing.
-   */
-  /******  a063a9a9-126d-43db-bdb6-5797e980b0c5  *******/ const handleChange = (
-    e
-  ) => {
+  const handleChange = (e) => {
     setDataRegister({
       ...dataRegister,
       [e.target.name]: e.target.value,
@@ -50,7 +43,7 @@ const Register = () => {
     };
 
     axios
-      .post(`${BASE_URL}/api/v1/register`, payload, config)
+      .post(`${BASE_URL + REGISTER}`, payload, config)
       .then((res) => {
         alert("Register Success");
         setTimeout(() => {

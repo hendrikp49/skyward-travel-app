@@ -2,6 +2,7 @@ import { useState } from "react";
 import { API_KEY, BASE_URL } from "../api/config";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { LOGIN } from "../api/auth";
 
 const Login = () => {
   const router = useRouter();
@@ -31,7 +32,7 @@ const Login = () => {
     };
 
     axios
-      .post(`${BASE_URL}/api/v1/login`, payload, config)
+      .post(`${BASE_URL + LOGIN}`, payload, config)
       .then((res) => {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("name", res.data.data.name);
