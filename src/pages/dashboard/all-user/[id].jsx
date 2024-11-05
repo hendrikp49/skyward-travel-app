@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import { ALL_USER, LOGGED_USER, UPDATE_ROLE } from "../api/user";
-import { API_KEY, BASE_URL } from "../api/config";
+import { ALL_USER, UPDATE_ROLE } from "../../api/user";
+import { API_KEY, BASE_URL } from "../../api/config";
 import axios from "axios";
 import { useRouter } from "next/router";
 
 const UpdateRole = () => {
   const router = useRouter();
   const [roleUser, setRoleUser] = useState([]);
-  // const [specificUser, setSpecificUser] = useState(null);
 
   const handleUser = () => {
     const config = {
@@ -20,14 +19,9 @@ const UpdateRole = () => {
       .get(`${BASE_URL + ALL_USER}`, config)
       .then((res) => {
         setRoleUser(res.data.data.find((user) => user.id === router.query.id));
-        // const user = res.data.data.find((user) => user.id === router.query.id);
-        // console.log(user);
-        // setSpecificUser(user);
       })
       .catch((err) => console.log(err));
   };
-
-  console.log(roleUser);
 
   const handleChange = (e) => {
     setRoleUser({
@@ -52,7 +46,6 @@ const UpdateRole = () => {
     axios
       .post(`${BASE_URL + UPDATE_ROLE + router.query.id}`, payload, config)
       .then((res) => {
-        console.log(res);
         alert("Update Success");
         setTimeout(() => {
           router.push("/dashboard/all-user");

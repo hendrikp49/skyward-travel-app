@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { BASE_URL, API_KEY } from "../api/config";
-import { ALL_USER } from "../api/user";
+import { BASE_URL, API_KEY } from "../../api/config";
+import { ALL_USER } from "../../api/user";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
