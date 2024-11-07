@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { LOGGED_USER } from "../api/user";
-import { API_KEY, BASE_URL } from "../api/config";
+import { LOGGED_USER } from "../../api/user";
+import { API_KEY, BASE_URL } from "../../api/config";
 import Image from "next/image";
 
 const User = () => {

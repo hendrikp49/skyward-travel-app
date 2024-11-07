@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { API_KEY, BASE_URL } from "../api/config";
+import { API_KEY, BASE_URL } from "../../api/config";
 import axios from "axios";
-import { UPDATE_USER, LOGGED_USER } from "../api/user";
+import { UPDATE_USER, LOGGED_USER } from "../../api/user";
 
-const UpdateUser = () => {
+const UpdateProfile = () => {
   const [dataUser, setDataUser] = useState({});
 
   const handleUser = () => {
@@ -89,4 +89,4 @@ const UpdateUser = () => {
   );
 };
 
-export default UpdateUser;
+export default UpdateProfile;
