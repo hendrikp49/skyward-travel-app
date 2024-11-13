@@ -233,7 +233,7 @@ const Home = () => {
           {dataActivity.map((activity) => (
             <div
               key={activity.id}
-              className="max-w-full space-y-3 overflow-hidden shadow-md h-96 w-72 rounded-xl shadow-slate-400"
+              className="max-w-full space-y-3 overflow-hidden shadow-md h-96 w-72 rounded-xl"
             >
               <img
                 src={activity.imageUrls[0]}
@@ -260,7 +260,11 @@ const Home = () => {
                 <hr />
 
                 <div className="flex items-center justify-between">
-                  <Button>Detail</Button>
+                  <Button
+                    onClick={() => router.push(`/activities/${activity.id}`)}
+                  >
+                    Detail
+                  </Button>
                   <div className="flex flex-col items-end gap-1">
                     <span className="text-xs font-light line-through">
                       {`Rp. ${activity.price.toLocaleString("id-ID")}`}
@@ -319,7 +323,10 @@ const Home = () => {
 
       {/* Book Now */}
       <section className="mx-auto md:max-w-3xl mt-28 lg:max-w-6xl">
-        <div className="relative w-full h-56 overflow-hidden rounded-xl">
+        <div
+          onClick={() => router.push("/activities")}
+          className="relative w-full h-56 overflow-hidden duration-200 ease-in-out transform shadow-md cursor-pointer shadow-slate-400 active:translate-y-1 active:shadow-none rounded-xl"
+        >
           <img
             src="images/scenery.webp"
             alt="Blue Scenery"
