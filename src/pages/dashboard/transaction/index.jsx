@@ -1,6 +1,7 @@
 import { API_KEY, BASE_URL } from "@/pages/api/config";
 import { TRANSACTIONS } from "@/pages/api/transaction";
 import axios from "axios";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const AllTransaction = () => {
@@ -37,6 +38,22 @@ const AllTransaction = () => {
   const lastIndexData = pagination.page * pagination.per_Page;
   const dataPage = dataTransaction.slice(firstIndexData, lastIndexData);
 
+  const handleNext = () => {
+    setPagination({
+      ...pagination,
+      page: pagination.page + 1,
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleBack = () => {
+    setPagination({
+      ...pagination,
+      page: pagination.page - 1,
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   useEffect(() => {
     handleDataTransaction();
   }, []);
@@ -52,8 +69,20 @@ const AllTransaction = () => {
             alt={data.payment_method.name}
           />
           <p>{data.totalAmount}</p>
+          <Link href={`/dashboard/transaction/${data.id}`}>
+            <button>Detail</button>
+          </Link>
         </div>
       ))}
+      <button disabled={pagination.page === 1} onClick={handleBack}>
+        prev
+      </button>
+      <button
+        disabled={pagination.page === pagination.total_Page}
+        onClick={handleNext}
+      >
+        next
+      </button>
     </div>
   );
 };
