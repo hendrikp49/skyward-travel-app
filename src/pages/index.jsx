@@ -5,12 +5,19 @@ import axios from "axios";
 import { ACTIVITIES } from "@/pages/api/activity";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import NavbarUser from "@/components/Navbar";
+import NavbarUser from "@/components/Layout/Navbar";
 import { ALL_BANNER } from "./api/banner";
 import { MapPin, MoveRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PROMO } from "./api/promo";
-import Footer from "@/components/Footer";
+import Footer from "@/components/Layout/Footer";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const Home = () => {
   const router = useRouter();
@@ -78,7 +85,7 @@ const Home = () => {
     axios
       .get(`${BASE_URL + ACTIVITIES}`, config)
       .then((res) => {
-        setDataActivity(res.data.data.slice(0, 4));
+        setDataActivity(res.data.data.slice(0, 6));
       })
       .catch((err) => console.log(err));
   };
@@ -229,55 +236,68 @@ const Home = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 pb-2 lg:gap-10 justify-items-center md:grid-cols-2 lg:grid-cols-4">
-          {dataActivity.map((activity) => (
-            <div
-              key={activity.id}
-              className="max-w-full space-y-3 overflow-hidden shadow-md h-96 w-72 rounded-xl"
-            >
-              <img
-                src={activity.imageUrls[0]}
-                alt={activity.title}
-                className="object-cover w-full h-1/2"
-              />
+        <Carousel
+          opts={{
+            align: "start",
+          }}
+        >
+          {/* grid grid-cols-1 gap-5 pb-2 lg:gap-10 justify-items-center md:grid-cols-2 lg:grid-cols-4 */}
+          <CarouselContent className="">
+            {dataActivity.map((activity) => (
+              <CarouselItem
+                key={activity.id}
+                className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+              >
+                <div className="space-y-3 overflow-hidden duration-200 ease-in-out border shadow-md h-96 rounded-xl">
+                  <img
+                    src={activity.imageUrls[0]}
+                    alt={activity.title}
+                    className="object-cover w-full h-1/2"
+                  />
 
-              <div className="px-2 space-y-5">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-1">
-                    <MapPin color="#04b3ef" size={16} />
-                    <span className="text-sm font-light">
-                      {activity.category.name}
-                    </span>
-                  </div>
-                  <p>{activity.title}</p>
+                  <div className="px-2 space-y-5">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-1">
+                        <MapPin color="#04b3ef" size={16} />
+                        <span className="text-sm font-light">
+                          {activity.category.name}
+                        </span>
+                      </div>
+                      <p>{activity.title}</p>
 
-                  <div className="flex items-center gap-3">
-                    <p>{rating(activity.rating)}</p>
-                    <span className="text-sm font-light">{`(${activity.total_reviews} reviews)`}</span>
+                      <div className="flex items-center gap-3">
+                        <p>{rating(activity.rating)}</p>
+                        <span className="text-sm font-light">{`(${activity.total_reviews} reviews)`}</span>
+                      </div>
+                    </div>
+
+                    <hr />
+
+                    <div className="flex items-center justify-between">
+                      <Button
+                        onClick={() =>
+                          router.push(`/activities/${activity.id}`)
+                        }
+                      >
+                        Detail
+                      </Button>
+                      <div className="flex flex-col items-end gap-1">
+                        <span className="text-xs font-light line-through">
+                          {`Rp. ${activity.price.toLocaleString("id-ID")}`}
+                        </span>
+                        <span className="font-medium">{`Rp. ${activity.price_discount.toLocaleString(
+                          "id-ID"
+                        )}`}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-
-                <hr />
-
-                <div className="flex items-center justify-between">
-                  <Button
-                    onClick={() => router.push(`/activities/${activity.id}`)}
-                  >
-                    Detail
-                  </Button>
-                  <div className="flex flex-col items-end gap-1">
-                    <span className="text-xs font-light line-through">
-                      {`Rp. ${activity.price.toLocaleString("id-ID")}`}
-                    </span>
-                    <span className="font-medium">{`Rp. ${activity.price_discount.toLocaleString(
-                      "id-ID"
-                    )}`}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
         <Link
           href={"/activities"}
           className="flex justify-center mx-auto w-fit"
@@ -303,8 +323,9 @@ const Home = () => {
         <div className="grid grid-cols-1 gap-3 justify-items-center lg:gap-5 md:grid-cols-2 lg:grid-cols-3">
           {dataPromo.map((promo) => (
             <div
+              onClick={() => router.push(`/offers/${promo.id}`)}
               key={promo.id}
-              className="relative w-56 overflow-hidden rounded-xl h-72"
+              className="relative w-56 overflow-hidden duration-200 ease-in-out transform shadow-sm cursor-pointer hover:-translate-y-3 hover:shadow-lg shadow-slate-500 hover:shadow-slate-400 hover:translate-x-1 hover:rotate-3 rounded-xl h-72"
             >
               <img
                 src={promo.imageUrl}
@@ -325,7 +346,7 @@ const Home = () => {
       <section className="mx-auto md:max-w-3xl mt-28 lg:max-w-6xl">
         <div
           onClick={() => router.push("/activities")}
-          className="relative w-full h-56 overflow-hidden duration-200 ease-in-out transform shadow-md cursor-pointer shadow-slate-400 active:translate-y-1 active:shadow-none rounded-xl"
+          className="relative w-full h-56 overflow-hidden duration-200 ease-in-out transform shadow-md cursor-pointer shadow-slate-500 hover:translate-y-1 hover:shadow-none rounded-xl"
         >
           <img
             src="images/scenery.webp"

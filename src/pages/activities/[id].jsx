@@ -4,15 +4,20 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { ADD_TO_CART } from "../api/cart";
-import NavbarUser from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import NavbarUser from "@/components/Layout/Navbar";
+import Footer from "@/components/Layout/Footer";
 import { MapPin, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const DetailActivity = () => {
   const router = useRouter();
-
   const [dataActivity, setDataActivity] = useState({});
+  const description = [
+    { name: "Description", ket: dataActivity.description },
+    { name: "Facilities", ket: dataActivity.facilities },
+    { name: "Address", ket: dataActivity.address },
+    { name: "Tour Map", ket: dataActivity.location_maps },
+  ];
 
   const handleDataActivity = () => {
     const config = {
@@ -105,27 +110,20 @@ const DetailActivity = () => {
           </div>
 
           <div className="space-y-5">
-            <div className="space-y-2">
-              <h4 className="text-xl font-medium ">Description</h4>
-              <p>{dataActivity.description}</p>
-            </div>
-
-            <div className="space-y-2">
-              <h4 className="text-xl font-medium ">Facilities</h4>
-              <p>{dataActivity.facilities}</p>
-            </div>
-
-            <div className="space-y-2">
-              <h4 className="text-xl font-medium ">Address</h4>
-              <p>{dataActivity.address}</p>
-            </div>
-
-            <div className="space-y-2">
-              <h4 className="text-xl font-medium ">Tour Map</h4>
-              <div
-                dangerouslySetInnerHTML={{ __html: dataActivity.location_maps }}
-              ></div>
-            </div>
+            {description.map((item, index) => (
+              <div key={index} className="space-y-2">
+                <h4 className="text-xl font-medium ">{item.name}</h4>
+                {item.name === "Tour Map" ? (
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: item.ket,
+                    }}
+                  ></div>
+                ) : (
+                  <p>{item.ket}</p>
+                )}
+              </div>
+            ))}
           </div>
 
           <div className="flex items-center justify-between p-5 bg-skyward-primary rounded-xl">
@@ -152,12 +150,6 @@ const DetailActivity = () => {
       </div>
 
       <Footer />
-      {/* <img src={dataActivity.imageUrls} alt="" className="w-24 aspect-square" />
-      <h1>{dataActivity.title}</h1>
-      <p>{dataActivity.description}</p>
-      <button onClick={handleAddToCart} className="block">
-        Add to Cart
-      </button> */}
     </div>
   );
 };

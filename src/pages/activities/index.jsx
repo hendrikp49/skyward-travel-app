@@ -3,10 +3,10 @@ import { API_KEY, BASE_URL } from "../api/config";
 import { ACTIVITIES, ACTIVITY_CATEGORY_ID } from "../api/activity";
 import axios from "axios";
 import Link from "next/link";
-import NavbarUser from "@/components/Navbar";
+import NavbarUser from "@/components/Layout/Navbar";
 import { ChevronLeft, ChevronRight, MapPin, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Footer from "@/components/Footer";
+import Footer from "@/components/Layout/Footer";
 import { CATEGORY } from "../api/category";
 
 const Activity = () => {
@@ -143,6 +143,7 @@ const Activity = () => {
       <section className="mt-28">
         <div className="mx-auto space-y-5 md:space-y-10 md:max-w-3xl lg:max-w-6xl">
           <div className="flex items-center justify-center gap-3">
+            {/* category */}
             {dataCategory.map((item) => (
               <button
                 key={item.id}
@@ -158,12 +159,13 @@ const Activity = () => {
             ))}
           </div>
 
+          {/* card */}
           <div className="grid grid-cols-1 gap-5 pb-2 lg:gap-10 justify-items-center md:grid-cols-2 lg:grid-cols-3">
             {currentData.map((activity) => (
               <Link
                 href={`/activities/${activity.id}`}
                 key={activity.id}
-                className="max-w-full space-y-3 overflow-hidden duration-200 ease-in-out transform border shadow-md cursor-pointer active:shadow-none active:translate-y-1 h-96 w-72 rounded-xl"
+                className="max-w-full space-y-3 overflow-hidden duration-200 ease-in-out transform border shadow-md cursor-pointer hover:shadow-none hover:translate-y-1 h-96 w-72 rounded-xl"
               >
                 <img
                   src={activity.imageUrls[0]}
