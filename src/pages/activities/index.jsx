@@ -1,15 +1,31 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { API_KEY, BASE_URL } from "../api/config";
 import { ACTIVITIES, ACTIVITY_CATEGORY_ID } from "../api/activity";
 import axios from "axios";
 import Link from "next/link";
 import NavbarUser from "@/components/Layout/Navbar";
-import { ChevronLeft, ChevronRight, MapPin, ShoppingCart } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  MoveRight,
+  ShoppingCart,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Layout/Footer";
 import { CATEGORY } from "../api/category";
+import { getCookie } from "cookies-next";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ADD_TO_CART } from "../api/cart";
+import { useRouter } from "next/router";
+import { CartContext } from "@/contexts/cartContext";
 
 const Activity = () => {
+  const token = getCookie("token");
+  const role = getCookie("role");
+  const router = useRouter();
+  const { handleDataCart } = useContext(CartContext);
   const [dataActivity, setDataActivity] = useState([]);
   const [dataCategory, setDataCategory] = useState([]);
   const [category, setCategory] = useState("");
@@ -100,6 +116,66 @@ const Activity = () => {
     });
   };
 
+  const handleAddToCart = (id) => {
+    if (token && role === "admin") {
+      toast.error("You are an Admin. You are not allowed to add to cart", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+      return;
+    }
+
+    if (!token) {
+      setTimeout(() => {
+        router.push("/auth/login");
+      }, 2000);
+      return toast.warning("Please login first", {
+        position: "top-center",
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+
+    const config = {
+      headers: {
+        apiKey: API_KEY,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    };
+
+    const payload = {
+      activityId: id,
+    };
+
+    axios
+      .post(`${BASE_URL + ADD_TO_CART}`, payload, config)
+      .then((res) => {
+        toast.success("Add to cart successfully", {
+          position: "bottom-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        handleDataCart();
+      })
+      .catch((err) => console.log(err));
+  };
+
   useEffect(() => {
     handleDataActivity();
     handleDataCategory();
@@ -162,10 +238,9 @@ const Activity = () => {
           {/* card */}
           <div className="grid grid-cols-1 gap-5 pb-2 lg:gap-10 justify-items-center md:grid-cols-2 lg:grid-cols-3">
             {currentData.map((activity) => (
-              <Link
-                href={`/activities/${activity.id}`}
+              <div
                 key={activity.id}
-                className="max-w-full space-y-3 overflow-hidden duration-200 ease-in-out transform border shadow-md cursor-pointer hover:shadow-none hover:translate-y-1 h-96 w-72 rounded-xl"
+                className="max-w-full pb-5 space-y-3 overflow-hidden duration-200 ease-in-out transform border shadow-md hover:shadow-none hover:translate-y-1 min-h-fit w-72 rounded-xl"
               >
                 <img
                   src={activity.imageUrls[0]}
@@ -202,13 +277,21 @@ const Activity = () => {
                         )}`}
                       </span>
                     </div>
-                    <Button>
-                      <ShoppingCart />
-                      Add to Cart
-                    </Button>
+                    <div className="flex flex-col items-end gap-2">
+                      <Link href={`/activities/${activity.id}`}>
+                        <Button variant="outline">
+                          Details
+                          <MoveRight />
+                        </Button>
+                      </Link>
+                      <Button onClick={() => handleAddToCart(activity.id)}>
+                        Add to Cart
+                        <ShoppingCart />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
 

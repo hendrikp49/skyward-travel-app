@@ -11,22 +11,72 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { deleteCookie } from "cookies-next";
 import {
   HandCoins,
   Home,
   Images,
   List,
+  LogOut,
+  PanelsTopLeft,
   Plane,
   TicketPercent,
   User,
   Users,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/router";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Sidebar = () => {
+  const router = useRouter();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const hamburger = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="lucide lucide-menu"
+    >
+      <line x1="4" x2="20" y1="12" y2="12" />
+      <line x1="4" x2="20" y1="6" y2="6" />
+      <line x1="4" x2="20" y1="18" y2="18" />
+    </svg>
+  );
+
+  const close = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="lucide lucide-x"
+    >
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
+    </svg>
+  );
   const menu = [
+    {
+      name: "Dashboard",
+      link: "/dashboard",
+      icon: <Home />,
+    },
     {
       name: "All user",
       link: "/dashboard/all-user",
@@ -59,30 +109,71 @@ const Sidebar = () => {
     },
   ];
 
+  const userMenu = [
+    {
+      name: "Go to website",
+      link: "/",
+      icon: <PanelsTopLeft />,
+    },
+    {
+      name: "My Profile",
+      link: "/dashboard/profile",
+      icon: <User />,
+    },
+  ];
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("name");
+    localStorage.removeItem("email");
+    localStorage.removeItem("image");
+    deleteCookie("token");
+    deleteCookie("role");
+    deleteCookie("idUser");
+    toast.success("Logout successfully", {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+    setTimeout(() => {
+      router.push("/auth/login");
+    }, 2000);
+  };
+
   return (
     <aside
-      className={`h-screen w-fit inline-block py-5 pl-2 ${
-        isOpen ? "pr-10" : "pr-2"
-      }  space-y-10 bg-skyward-tertiary ease-linear duration-500`}
+      className={`h-screen  inline-block py-5 pl-2 ${
+        isOpen ? "pr-10 w-52" : "pr-2 w-16"
+      }  space-y-10 bg-skyward-tertiary ease-linear duration-300`}
     >
-      <div className="flex flex-col justify-between h-full">
-        <div className="space-y-10">
-          <Link href={"/dashboard"} className="flex gap-3 pl-3">
+      <div className="flex flex-col justify-between h-full transition-all duration-200 ease-in-out transform">
+        <div className="space-y-10 overflow-hidden">
+          <div className="flex items-center gap-3 pl-3">
             {isOpen ? (
-              <p className="text-xl font-bold md:text-3xl">
-                <span className="text-skyward-primary">Sky</span>ward
-              </p>
+              <>
+                <button onClick={() => setIsOpen(!isOpen)}>{close}</button>
+                <p className="text-xl font-bold md:text-2xl font-casser">
+                  <span className="text-skyward-primary">Sky</span>ward
+                </p>
+              </>
             ) : (
-              <Home />
+              <button onClick={() => setIsOpen(!isOpen)}>{hamburger}</button>
             )}
-          </Link>
+          </div>
 
           <ul className="space-y-2">
             {menu.map((item, index) => (
               <Link
                 key={index}
                 href={item.link}
-                className="flex gap-3 p-3 rounded-md hover:bg-neutral-200"
+                className={`flex gap-3 p-3 rounded-md hover:bg-neutral-200 ${
+                  pathname === item.link && "bg-neutral-200"
+                }`}
               >
                 <TooltipProvider>
                   <Tooltip>
@@ -91,10 +182,8 @@ const Sidebar = () => {
                   </Tooltip>
                 </TooltipProvider>
                 {isOpen && <p>{item.name}</p>}
-                {/* <p>{item.name}</p> */}
               </Link>
             ))}
-            <button onClick={() => setIsOpen(!isOpen)}>click</button>
           </ul>
         </div>
 
@@ -105,11 +194,22 @@ const Sidebar = () => {
               {isOpen && <p>Username</p>}
             </div>
             <DropdownMenuContent>
-              <DropdownMenuItem>1</DropdownMenuItem>
-              <DropdownMenuItem>2</DropdownMenuItem>
-              <DropdownMenuItem>3</DropdownMenuItem>
+              {userMenu.map((item, index) => (
+                <Link key={index} href={item.link}>
+                  <DropdownMenuItem className="flex gap-2 cursor-pointer">
+                    {item.icon}
+                    {item.name}
+                  </DropdownMenuItem>
+                </Link>
+              ))}
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="flex gap-2 text-red-600 cursor-pointer"
+              >
+                <LogOut color="red" />
+                Logout
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenuTrigger>
         </DropdownMenu>

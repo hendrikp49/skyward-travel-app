@@ -1,16 +1,26 @@
+import Sidebar from "@/components/Layout/Sidebar";
+import { Button } from "@/components/ui/button";
+import { ActivityContext } from "@/contexts/activityContext";
+import { CategoryContext } from "@/contexts/categoryContext";
 import { CREATE_ACTIVITY } from "@/pages/api/activity";
 import { BASE_URL, API_KEY } from "@/pages/api/config";
 import axios from "axios";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useContext, useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CreateActivity = () => {
+  const router = useRouter();
+  const { dataCategory } = useContext(CategoryContext);
+  const { handleDataActivity } = useContext(ActivityContext);
   const [dataActivity, setDataActivity] = useState({
     title: "",
     description: "",
     categoryId: "",
     province: "",
     city: "",
-    imageUrls: [""],
+    imageUrls: [],
     facilities: "",
     price: 0,
     price_discount: 0,
@@ -59,96 +69,153 @@ const CreateActivity = () => {
     axios
       .post(`${BASE_URL + CREATE_ACTIVITY}`, payload, config)
       .then((res) => {
-        alert(res.data.message);
+        toast.success("Create Activity Successful", {
+          position: "bottom-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
         setTimeout(() => {
+          handleDataActivity();
           router.push("/dashboard/activity");
-        }, 1000);
+        }, 2000);
       })
       .catch((err) => console.log(err.response));
   };
 
+  const dataInput = [
+    {
+      label: "Title",
+      name: "title",
+      type: "text",
+      placeholder: "Title Activity",
+      change: handleChange,
+    },
+    {
+      label: "Description",
+      name: "description",
+      type: "text",
+      placeholder: "Description Activity",
+      change: handleChange,
+    },
+    {
+      label: "Category",
+      name: "categoryId",
+      change: handleChange,
+    },
+    {
+      label: "Province",
+      name: "province",
+      type: "text",
+      placeholder: "Province Activity",
+      change: handleChange,
+    },
+    {
+      label: "City",
+      name: "city",
+      type: "text",
+      placeholder: "City Activity",
+      change: handleChange,
+    },
+    {
+      label: "Facilities",
+      name: "facilities",
+      type: "text",
+      placeholder: "Facilities Activity",
+      change: handleChange,
+    },
+    {
+      label: "Price",
+      name: "price",
+      type: "number",
+      placeholder: "0",
+      change: handleChange,
+    },
+    {
+      label: "Discount Price",
+      name: "price_discount",
+      type: "number",
+      placeholder: "0",
+      change: handleChange,
+    },
+    {
+      label: "Rating",
+      name: "rating",
+      type: "number",
+      placeholder: "5",
+      change: handleChange,
+    },
+    {
+      label: "Total Reviews",
+      name: "total_reviews",
+      type: "number",
+      placeholder: "Total Reviews",
+      change: handleChange,
+    },
+    {
+      label: "Image Url",
+      name: "imageUrls",
+      type: "text",
+      placeholder: "",
+      change: handleChangeImage,
+    },
+  ];
+
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <input
-          className="block border"
-          type="text"
-          name="title"
-          placeholder="title"
-          onChange={handleChange}
-        />
-        <input
-          className="block border"
-          type="text"
-          name="description"
-          placeholder="description"
-          onChange={handleChange}
-        />
-        <input
-          className="block border"
-          type="text"
-          name="category"
-          placeholder="category"
-          onChange={handleChange}
-        />
-        <input
-          className="block border"
-          type="text"
-          name="province"
-          placeholder="province"
-          onChange={handleChange}
-        />
-        <input
-          className="block border"
-          type="text"
-          name="city"
-          placeholder="city"
-          onChange={handleChange}
-        />
-        <input
-          className="block border"
-          type="text"
-          name="imageUrls"
-          placeholder="imageUrls"
-          onChange={handleChangeImage}
-        />
-        <input
-          className="block border"
-          type="text"
-          name="facilities"
-          placeholder="facilities"
-          onChange={handleChange}
-        />
-        <input
-          className="block border"
-          type="text"
-          name="price"
-          placeholder="price"
-          onChange={handleChange}
-        />
-        <input
-          className="block border"
-          type="text"
-          name="price_discount"
-          placeholder="price_discount"
-          onChange={handleChange}
-        />
-        <input
-          className="block border"
-          type="text"
-          name="rating"
-          placeholder="rating"
-          onChange={handleChange}
-        />
-        <input
-          className="block border"
-          type="text"
-          name="total_reviews"
-          placeholder="total_reviews"
-          onChange={handleChange}
-        />
-        <button type="submit">Submit</button>
-      </form>
+    <div className="flex">
+      <Sidebar />
+
+      <main className="flex flex-col items-center justify-center w-full h-screen pb-5 text-white bg-slate-800">
+        <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
+          <h1 className="w-full text-3xl font-bold text-center text-white underline underline-offset-8">
+            Create Activity
+          </h1>
+
+          <form
+            onSubmit={handleSubmit}
+            className="grid max-w-sm grid-cols-2 gap-5 p-5 mx-auto border rounded-xl"
+          >
+            {dataInput.map((input, index) => (
+              <div key={index} className="flex flex-col gap-1">
+                <label htmlFor="name">{input.label}</label>
+                {input.name === "categoryId" ? (
+                  <select
+                    onChange={input.change}
+                    className="px-2 py-1 rounded-lg text-slate-950"
+                    name={input.name}
+                  >
+                    <option disabled value="">
+                      Select Category
+                    </option>
+                    {dataCategory.map((category, index) => (
+                      <option key={index} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    onChange={input.change}
+                    className="px-2 py-1 rounded-lg text-slate-950"
+                    type={input.type}
+                    name={input.name}
+                    placeholder={input.placeholder}
+                  />
+                )}
+              </div>
+            ))}
+            <div className="flex justify-end">
+              <Button variant="secondary" type="submit">
+                Save Changes
+              </Button>
+            </div>
+          </form>
+        </div>
+      </main>
     </div>
   );
 };

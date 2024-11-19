@@ -12,21 +12,10 @@ import { AllUserContext } from "@/contexts/allUserContext";
 const UpdateRole = () => {
   const router = useRouter();
   const [roleUser, setRoleUser] = useState({});
-  const { handleDataUser } = useContext(AllUserContext);
+  const { handleDataUser, allUsers } = useContext(AllUserContext);
 
   const handleUser = () => {
-    const config = {
-      headers: {
-        apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    };
-    axios
-      .get(`${BASE_URL + ALL_USER}`, config)
-      .then((res) => {
-        setRoleUser(res.data.data.find((user) => user.id === router.query.id));
-      })
-      .catch((err) => console.log(err));
+    setRoleUser(allUsers.find((user) => user.id === router.query.id));
   };
 
   const handleChange = (e) => {
@@ -165,7 +154,7 @@ const UpdateRole = () => {
               />
             </div>
             <div className="flex justify-end">
-              <Button onClick={handleSubmit} variant="secondary" type="submit">
+              <Button variant="secondary" type="submit">
                 Save Changes
               </Button>
             </div>

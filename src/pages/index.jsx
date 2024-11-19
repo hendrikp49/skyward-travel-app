@@ -207,12 +207,12 @@ const Home = () => {
           {dataBanner.map((banner) => (
             <div
               key={banner.id}
-              className="relative w-56 overflow-hidden rounded-xl h-72"
+              className="relative w-56 overflow-hidden group rounded-xl h-72"
             >
               <img
                 src={banner.imageUrl}
                 alt={banner.name}
-                className="object-cover h-full"
+                className="object-cover h-full duration-500 ease-in-out group-hover:scale-105"
               />
               <div className="absolute bottom-0 w-full h-16 bg-gradient-to-t from-black/70 to-transparent"></div>
               <h5 className="absolute left-0 right-0 z-20 mx-auto text-lg font-bold text-center text-white text-semibold bottom-5">
@@ -241,7 +241,6 @@ const Home = () => {
             align: "start",
           }}
         >
-          {/* grid grid-cols-1 gap-5 pb-2 lg:gap-10 justify-items-center md:grid-cols-2 lg:grid-cols-4 */}
           <CarouselContent className="">
             {dataActivity.map((activity) => (
               <CarouselItem
@@ -309,7 +308,7 @@ const Home = () => {
       </section>
 
       {/* Offers */}
-      <section className="flex flex-col gap-10 mx-auto mt-28 font-raleway md:max-w-lg lg:max-w-3xl">
+      <section className="flex flex-col gap-10 mx-auto mt-28 font-raleway md:max-w-lg lg:max-w-3xl ">
         <div className="flex flex-col items-center justify-center gap-2 text-center">
           <h2 className="max-w-xs text-2xl font-bold lg:max-w-md md:text-3xl font-playfair-display">
             Exclusive Offers for Your Next Unforgettable Journey

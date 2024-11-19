@@ -22,12 +22,8 @@ const AllUserContextProvider = ({ children }) => {
       .catch((err) => console.log(err));
   };
 
-  useEffect(() => {
-    handleDataUser();
-  }, []);
-
   return (
-    <AllUserContext.Provider value={{ allUsers, setAllUsers, handleDataUser }}>
+    <AllUserContext.Provider value={{ allUsers, handleDataUser }}>
       {children}
     </AllUserContext.Provider>
   );

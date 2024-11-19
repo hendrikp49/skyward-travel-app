@@ -8,8 +8,13 @@ import NavbarUser from "@/components/Layout/Navbar";
 import Footer from "@/components/Layout/Footer";
 import { MapPin, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { getCookie } from "cookies-next";
 
 const DetailActivity = () => {
+  const token = getCookie("token");
+  const role = getCookie("role");
   const router = useRouter();
   const [dataActivity, setDataActivity] = useState({});
   const description = [
@@ -29,13 +34,42 @@ const DetailActivity = () => {
     axios
       .get(`${BASE_URL + ACTIVITY_ID + router.query.id}`, config)
       .then((res) => {
-        console.log(res.data.data);
         setDataActivity(res.data.data);
       })
       .catch((err) => console.log(err));
   };
 
   const handleAddToCart = () => {
+    if (token && role === "admin") {
+      toast.error("You are not allowed to add to cart", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+      return;
+    }
+
+    if (!token) {
+      setTimeout(() => {
+        router.push("/auth/login");
+      }, 2000);
+      return toast.warning("Please login first", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+
     const config = {
       headers: {
         apiKey: API_KEY,
@@ -50,10 +84,16 @@ const DetailActivity = () => {
     axios
       .post(`${BASE_URL + ADD_TO_CART}`, payload, config)
       .then((res) => {
-        alert(res.data.message);
-        setTimeout(() => {
-          router.push("/activity");
-        }, 1000);
+        toast.success("Add to cart successfully", {
+          position: "bottom-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       })
       .catch((err) => console.log(err));
   };
@@ -127,9 +167,9 @@ const DetailActivity = () => {
           </div>
 
           <div className="flex items-center justify-between p-5 bg-skyward-primary rounded-xl">
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 text-white">
               {dataActivity.price && (
-                <span className="text-xs font-light line-through">{`Rp ${dataActivity.price.toLocaleString(
+                <span className="text-xs font-light line-through text-slate-200">{`Rp ${dataActivity.price.toLocaleString(
                   "id-ID"
                 )}`}</span>
               )}

@@ -8,107 +8,110 @@ import { Button } from "@/components/ui/button";
 import NavbarUser from "@/components/Layout/Navbar";
 import { Trash2 } from "lucide-react";
 import Footer from "@/components/Layout/Footer";
+import { CREATE_TRANSACTION } from "@/pages/api/transaction";
+import { PAYMENT_METHOD } from "@/pages/api/payment";
+import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 
 const Cart = () => {
+  const router = useRouter();
   const { dataCart, handleDataCart } = useContext(CartContext);
+  const [paymentMethod, setPaymentMethod] = useState([]);
+  const [transaction, setTransaction] = useState({
+    cartIds: [],
+    paymentMethodId: "",
+  });
 
-  const handleChangeQuantity = (id, action) => {
+  const handlePaymentMethod = () => {
     const config = {
       headers: {
         apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     };
-
-    const itemCart = dataCart.find((item) => item.id === id);
-
-    const updateQty =
-      action === "add" ? itemCart.quantity + 1 : itemCart.quantity - 1;
-
-    const payload = {
-      quantity: updateQty,
-    };
     axios
-      .post(`${BASE_URL + UPDATE_CART + itemCart.id}`, payload, config)
+      .get(`${BASE_URL + PAYMENT_METHOD}`, config)
       .then((res) => {
-        handleDataCart();
+        setPaymentMethod(res.data.data);
       })
       .catch((err) => console.log(err));
   };
 
-  const handleDeleteCart = (id) => {
+  const handleChange = (e) => {
+    setTransaction({
+      ...transaction,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleCreateTransaction = () => {
     const config = {
       headers: {
         apiKey: API_KEY,
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     };
+
+    const payload = {
+      cartIds: dataCart.map((item) => item.id),
+      paymentMethodId: transaction.paymentMethodId,
+    };
+
     axios
-      .delete(`${BASE_URL + DELETE_CART + id}`, config)
+      .post(`${BASE_URL + CREATE_TRANSACTION}`, payload, config)
       .then((res) => {
-        handleDataCart();
+        toast.success("Checkout Success", {
+          position: "bottom-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+        setTimeout(() => {
+          router.push("/user/my-transaction");
+        }, 2000);
       })
       .catch((err) => console.log(err));
   };
 
   useEffect(() => {
     handleDataCart();
+    handlePaymentMethod();
   }, []);
 
   return (
-    <div className="bg-zinc-50">
+    <div className="bg-zinc-50 font-raleway">
       <NavbarUser />
 
       <div className="mt-10">
-        <div className="p-10 mx-auto space-y-10 overflow-auto bg-white border rounded-lg shadow-sm shadow-slate-400 md:max-w-3xl lg:max-w-6xl">
-          <h1 className="text-2xl font-bold">My Cart</h1>
+        <div className="p-10 mx-auto space-y-10 overflow-auto bg-white border rounded-lg shadow-sm lg:space-y-20 shadow-slate-400 md:max-w-xl lg:max-w-3xl">
+          <h1 className="text-2xl font-bold font-playfair-display">
+            My Cart / Checkout
+          </h1>
 
           <div>
             <table className="w-full">
               <thead className="border-b-2 rounded-lg border-slate-700">
                 <tr>
-                  <th>#</th>
                   <th>Product</th>
                   <th>Price</th>
                   <th>Qty</th>
                   <th>Total Price</th>
-                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {dataCart.map((data, index) => (
                   <tr key={data.id} className="border-b">
-                    <td className="flex items-center justify-center py-5">
-                      <img
-                        className="object-cover rounded-md w-14 aspect-square"
-                        src={data.activity.imageUrls}
-                        alt={data.activity.title}
-                      />
-                    </td>
                     <td className="py-5 text-center">{data.activity.title}</td>
                     <td className="py-5 space-x-2 text-center">
-                      <span className="text-xs line-through text-slate-400">
-                        Rp. {data.activity.price?.toLocaleString("id")}
-                      </span>
                       <span>
                         Rp. {data.activity.price_discount?.toLocaleString("id")}
                       </span>
                     </td>
                     <td className="space-x-2 text-center">
-                      <button
-                        className="border rounded-md w-7 aspect-square"
-                        disabled={data.quantity === 1}
-                        onClick={() => handleChangeQuantity(data.id, "remove")}
-                      >
-                        -
-                      </button>
                       <p className="inline-block">{data.quantity}</p>
-                      <button
-                        className="border rounded-md w-7 aspect-square"
-                        onClick={() => handleChangeQuantity(data.id, "add")}
-                      >
-                        +
-                      </button>
                     </td>
                     <td className="py-5 text-center">
                       Rp.{" "}
@@ -116,36 +119,46 @@ const Cart = () => {
                         data.activity.price_discount * data.quantity
                       ).toLocaleString("id")}
                     </td>
-                    <td className="py-5 text-center">
-                      <button onClick={() => handleDeleteCart(data.id)}>
-                        <Trash2 color="red" />
-                      </button>
-                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
 
-          <div className="flex items-center justify-between px-3 py-5 text-white rounded-lg bg-skyward-primary">
+          <div className="space-y-10">
+            <h2 className="text-2xl font-bold font-playfair-display">
+              Choose Payment
+            </h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {paymentMethod.map((data, index) => (
+                <div key={index} className="flex items-center gap-4">
+                  <input
+                    type="radio"
+                    name="paymentMethodId"
+                    value={data.id}
+                    onChange={handleChange}
+                  />
+                  <div className="flex items-center space-x-2">
+                    <img
+                      src={data.imageUrl}
+                      alt={data.name}
+                      className="aspect-square h-14"
+                    />
+                    <span>{data.name}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <hr />
+
+          <div className="flex items-center justify-between px-3 py-5 text-white rounded-lg bg-gradient-to-br from-skyward-secondary to-fuchsia-500">
             <div>
-              <h2 className="space-x-2 text-2xl font-bold">
-                Total{" "}
-                <span className="text-sm font-normal">
-                  {`(${dataCart.length} Product)`}
-                </span>
-              </h2>
+              <h2 className="space-x-2 text-2xl font-bold">Total</h2>
             </div>
             <div className="flex items-center justify-center gap-2 lg:gap-5">
               <div className="text-right">
-                <p className="text-xs line-through text-black/30">
-                  {`Rp. ${dataCart
-                    .reduce(
-                      (acc, item) => acc + item.activity.price * item.quantity,
-                      0
-                    )
-                    .toLocaleString("id")}`}
-                </p>
                 <span className="text-xl font-medium">
                   {`Rp. ${dataCart
                     .reduce(
@@ -157,9 +170,9 @@ const Cart = () => {
                 </span>
               </div>
               <div>
-                <Link href="/user/cart/checkout">
-                  <Button variant="secondary">Checkout</Button>
-                </Link>
+                <Button onClick={handleCreateTransaction}>
+                  Create Payment
+                </Button>
               </div>
             </div>
           </div>

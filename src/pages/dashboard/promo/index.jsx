@@ -1,39 +1,55 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { API_KEY, BASE_URL } from "../../api/config";
 import axios from "axios";
 import { DELETE_PROMO, PROMO } from "../../api/promo";
 import Link from "next/link";
+import { PromoContext } from "@/contexts/promoContext";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Sidebar from "@/components/Layout/Sidebar";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  FilePen,
+  Trash2,
+} from "lucide-react";
 
 const Promo = () => {
-  const [dataPromo, setDataPromo] = useState([]);
+  const { dataPromo, handleDataPromo } = useContext(PromoContext);
   const [pagination, setPagination] = useState({
     page: 1,
-    per_Page: 5,
-    total_Page: 0,
+    perPage: 5,
+    totalPage: 0,
   });
 
-  const handleDataPromo = () => {
-    const config = {
-      headers: {
-        apiKey: API_KEY,
-      },
-    };
-
-    axios
-      .get(`${BASE_URL + PROMO}`, config)
-      .then((res) => {
-        setDataPromo(res.data.data);
-        setPagination({
-          ...pagination,
-          total_Page: Math.ceil(res.data.data.length / pagination.per_Page),
-        });
-      })
-      .catch((err) => console.log(err.response));
+  const allPage = () => {
+    setPagination({
+      ...pagination,
+      totalPage: Math.ceil(dataPromo.length / pagination.perPage),
+    });
   };
 
   const firstIndexData =
-    pagination.page * pagination.per_Page - pagination.per_Page;
-  const lastIndexData = pagination.page * pagination.per_Page;
+    pagination.page * pagination.perPage - pagination.perPage;
+  const lastIndexData = pagination.page * pagination.perPage;
   const dataPromoPage = dataPromo.slice(firstIndexData, lastIndexData);
 
   const handleNext = () => {
@@ -41,7 +57,6 @@ const Promo = () => {
       ...pagination,
       page: pagination.page + 1,
     });
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleBack = () => {
@@ -49,7 +64,6 @@ const Promo = () => {
       ...pagination,
       page: pagination.page - 1,
     });
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const deleteData = (id) => {
@@ -63,45 +77,145 @@ const Promo = () => {
     axios
       .delete(`${BASE_URL + DELETE_PROMO + id}`, config)
       .then((res) => {
-        alert("Delete Success");
-        handleDataPromo();
+        toast.success("Data deleted successfully", {
+          position: "bottom-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        const updatedPromo = dataPromo.filter((promo) => promo.id !== id);
+        handleDataPromo(updatedPromo);
       })
       .catch((err) => console.log(err.response));
   };
 
   useEffect(() => {
     handleDataPromo();
-  }, []);
+  }, [pagination.totalPage]);
+
+  useEffect(() => {
+    allPage();
+  }, [dataPromo]);
 
   return (
-    <div>
-      <Link href={`/dashboard/promo/create-promo`}>
-        <p>Create</p>
-      </Link>
-      {dataPromoPage.map((promo) => (
-        <div key={promo.id}>
-          <img
-            src={promo.imageUrl}
-            alt={promo.title}
-            className="w-24 aspect-square"
-          />
-          <p>{promo.title}</p>
-          <p>{promo.description}</p>
-          <Link href={`/dashboard/promo/${promo.id}`}>
-            <button>Edit</button>
-          </Link>
-          <button onClick={() => deleteData(promo.id)}>Delete</button>
+    <div className="flex">
+      <Sidebar />
+
+      <main className="flex flex-col items-center justify-center w-full h-screen text-white bg-slate-800">
+        <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
+          <h1 className="w-full text-3xl font-bold text-left text-white underline underline-offset-8">
+            Promo List
+          </h1>
+
+          <div>
+            <Link
+              href={"/dashboard/promo/create-promo"}
+              className="flex justify-end w-full"
+            >
+              <Button variant="secondary">Create Promo</Button>
+            </Link>
+          </div>
+
+          <Table>
+            <TableHeader className="bg-skyward-tertiary">
+              <TableRow className="text-left">
+                <TableHead>Picture</TableHead>
+                <TableHead>Title</TableHead>
+                <TableHead>Promo Code</TableHead>
+                <TableHead>Discount Price</TableHead>
+                <TableHead className="text-right">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
+              {dataPromoPage.map((item, index) => (
+                <TableRow
+                  key={item.id}
+                  className={`${
+                    index % 2 === 0
+                      ? "bg-skyward-primary/20"
+                      : "bg-skyward-primary/5"
+                  }`}
+                >
+                  <TableCell>
+                    <Avatar>
+                      <AvatarImage src={item.imageUrl} />
+                    </Avatar>
+                  </TableCell>
+                  <TableCell>{item.title}</TableCell>
+                  <TableCell>{item.promo_code}</TableCell>
+                  {item.promo_discount_price && (
+                    <TableCell>
+                      Rp. {item.promo_discount_price.toLocaleString("id")}
+                    </TableCell>
+                  )}
+                  <TableCell className="flex justify-end gap-2 text-right">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Link href={`/dashboard/promo/${item.id}`}>
+                            <FilePen color="orange" />
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent>Edit</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <span onClick={() => deleteData(item.id)}>
+                            <Trash2 color="#f54531" />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>Delete</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+
+          <div className="flex gap-3">
+            <div className="flex">
+              <ChevronsLeft
+                onClick={() => setPagination({ ...pagination, page: 1 })}
+                className="cursor-pointer"
+              />
+              <button
+                disabled={pagination.page === 1}
+                className="disabled:cursor-not-allowed"
+                onClick={handleBack}
+              >
+                <ChevronLeft />
+              </button>
+            </div>
+            <span>
+              {pagination.page} of {pagination.totalPage}
+            </span>
+            <div className="flex">
+              <button
+                disabled={pagination.page === pagination.totalPage}
+                className="disabled:cursor-not-allowed"
+                onClick={handleNext}
+              >
+                <ChevronRight />
+              </button>
+              <ChevronsRight
+                className="cursor-pointer"
+                onClick={() =>
+                  setPagination({ ...pagination, page: pagination.totalPage })
+                }
+              />
+            </div>
+          </div>
         </div>
-      ))}
-      <button onClick={handleBack} disabled={pagination.page === 1}>
-        Prev
-      </button>
-      <button
-        onClick={handleNext}
-        disabled={pagination.page === pagination.total_Page}
-      >
-        Next
-      </button>
+      </main>
     </div>
   );
 };

@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import { AllUserContext } from "@/contexts/allUserContext";
-import { PageContext } from "@/contexts/pageContext";
 import Sidebar from "@/components/Layout/Sidebar";
 import {
   Table,
@@ -26,12 +25,14 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useRouter } from "next/router";
 
 const AllUser = () => {
-  const { allUsers } = useContext(AllUserContext);
-  const { pagination, setPagination } = useContext(PageContext);
-  const router = useRouter();
+  const { allUsers, handleDataUser } = useContext(AllUserContext);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    perPage: 5,
+    totalPage: 0,
+  });
 
   const allPage = () => {
     setPagination({
@@ -50,7 +51,6 @@ const AllUser = () => {
       ...pagination,
       page: pagination.page + 1,
     });
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleBack = () => {
@@ -58,15 +58,15 @@ const AllUser = () => {
       ...pagination,
       page: pagination.page - 1,
     });
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   useEffect(() => {
+    handleDataUser();
+  }, [pagination.totalPage]);
+
+  useEffect(() => {
     allPage();
-    if (router.query.id) {
-      handleUser();
-    }
-  }, [router.query.id]);
+  }, [allUsers]);
 
   return (
     <div className="flex">
@@ -104,7 +104,7 @@ const AllUser = () => {
                   </TableCell>
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell className="space-x-1">
+                  <TableCell>
                     <span>{user.role}</span>
                   </TableCell>
                   <TableCell className="flex justify-end gap-2 text-right">
@@ -116,17 +116,6 @@ const AllUser = () => {
                           </Link>
                         </TooltipTrigger>
                         <TooltipContent>Edit</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Link href={`/dashboard/${user.id}`}>
-                            <Trash2 color="#f54531" />
-                          </Link>
-                        </TooltipTrigger>
-                        <TooltipContent>Delete</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </TableCell>

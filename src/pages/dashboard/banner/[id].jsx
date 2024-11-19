@@ -1,32 +1,40 @@
+import Sidebar from "@/components/Layout/Sidebar";
+import { Button } from "@/components/ui/button";
+import { BannerContext } from "@/contexts/bannerContext";
 import { BANNER_ID, UPDATE_BANNER } from "@/pages/api/banner";
 import { API_KEY, BASE_URL } from "@/pages/api/config";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const DetailBanner = () => {
+  const { dataBanner, handleDataBanner } = useContext(BannerContext);
+  const [bannerId, setBannerId] = useState({});
   const router = useRouter();
-  const [dataBanner, setDataBanner] = useState({
-    name: "",
-    imageUrl: "",
-  });
+  const dataInput = [
+    {
+      name: "name",
+      type: "text",
+      label: "Name",
+      value: bannerId.name,
+    },
+    {
+      name: "imageUrl",
+      type: "text",
+      label: "Image URL",
+      value: bannerId.imageUrl,
+    },
+  ];
 
-  const handleDataBanner = () => {
-    const config = {
-      headers: {
-        apiKey: API_KEY,
-      },
-    };
-
-    axios
-      .get(`${BASE_URL + BANNER_ID + router.query.id}`, config)
-      .then((res) => setDataBanner(res.data.data))
-      .catch((err) => console.log(err.response));
+  const handleBannerId = () => {
+    setBannerId(dataBanner.find((item) => item.id === router.query.id));
   };
 
   const handleChange = (e) => {
-    setDataBanner({
-      ...dataBanner,
+    setBannerId({
+      ...bannerId,
       [e.target.name]: e.target.value,
     });
   };
@@ -42,51 +50,72 @@ const DetailBanner = () => {
     };
 
     const payload = {
-      name: dataBanner.name,
-      imageUrl: dataBanner.imageUrl,
+      name: bannerId.name,
+      imageUrl: bannerId.imageUrl,
     };
 
     axios
       .post(`${BASE_URL + UPDATE_BANNER + router.query.id}`, payload, config)
       .then((res) => {
-        alert("Update Success");
+        toast.success("Data updated successfully", {
+          position: "bottom-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+
         setTimeout(() => {
+          handleDataBanner();
           router.push("/dashboard/banner");
-        }, 1000);
+        }, 2000);
       })
       .catch((err) => console.log(err.response));
   };
 
   useEffect(() => {
     if (router.query.id) {
-      handleDataBanner();
+      handleBannerId();
     }
   }, [router.query.id]);
 
   return (
-    <div>
-      <img
-        src={dataBanner.imageUrl}
-        alt={dataBanner.name}
-        className="w-24 aspect-square"
-      />
-      <form onSubmit={handleSubmit}>
-        <input
-          onChange={handleChange}
-          type="text"
-          name="name"
-          value={dataBanner.name}
-          className="border"
-        />
-        <input
-          onChange={handleChange}
-          type="text"
-          name="imageUrl"
-          value={dataBanner.imageUrl}
-          className="border"
-        />
-        <button type="submit">Save</button>
-      </form>
+    <div className="flex">
+      <Sidebar />
+
+      <main className="flex flex-col items-center justify-center w-full h-screen text-white bg-slate-800">
+        <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
+          <h1 className="w-full text-3xl font-bold text-center text-white underline underline-offset-8">
+            Edit Banner
+          </h1>
+
+          <form
+            onSubmit={handleSubmit}
+            className="max-w-sm p-5 mx-auto space-y-3 border rounded-xl"
+          >
+            {dataInput.map((input) => (
+              <div className="flex flex-col gap-1">
+                <label>{input.label}</label>
+                <input
+                  onChange={handleChange}
+                  className="px-2 py-1 rounded-lg text-slate-950"
+                  type={input.type}
+                  name={input.name}
+                  value={input.value}
+                />
+              </div>
+            ))}
+            <div className="flex justify-end">
+              <Button variant="secondary" type="submit">
+                Save Changes
+              </Button>
+            </div>
+          </form>
+        </div>
+      </main>
     </div>
   );
 };
