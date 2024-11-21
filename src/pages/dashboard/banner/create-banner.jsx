@@ -1,17 +1,22 @@
 import Sidebar from "@/components/Layout/Sidebar";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { BannerContext } from "@/contexts/bannerContext";
 import { CREATE_BANNER } from "@/pages/api/banner";
 import { API_KEY, BASE_URL } from "@/pages/api/config";
+import { UPLOAD } from "@/pages/api/upload";
 import axios from "axios";
+import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const CreateBanner = () => {
-  const { handleDataBanner } = useContext(BannerContext);
   const router = useRouter();
+  const { handleDataBanner } = useContext(BannerContext);
+  const [image, setImage] = useState(null);
+  const [uploadImage, setUploadImage] = useState(null);
   const [createBanner, setCreateBanner] = useState({
     name: "",
     imageUrl: "",
@@ -25,7 +30,7 @@ const CreateBanner = () => {
     },
     {
       name: "imageUrl",
-      type: "text",
+      type: "file",
       label: "Image URL",
       placeholder: "Image URL",
     },
@@ -38,19 +43,42 @@ const CreateBanner = () => {
     });
   };
 
+  const handleChangeImage = (e) => {
+    setImage(e.target.files[0]);
+  };
+
+  const handleUploadImage = (e) => {
+    const config = {
+      headers: {
+        apiKey: API_KEY,
+        Authorization: `Bearer ${getCookie("token")}`,
+      },
+    };
+
+    const formData = new FormData();
+    formData.append("image", image);
+
+    axios
+      .post(`${BASE_URL + UPLOAD}`, formData, config)
+      .then((res) => {
+        setUploadImage(res.data.url);
+      })
+      .catch((err) => console.log(err.response));
+  };
+
   const createDataBanner = (e) => {
     e.preventDefault();
 
     const config = {
       headers: {
         apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getCookie("token")}`,
       },
     };
 
     const payload = {
       name: createBanner.name,
-      imageUrl: createBanner.imageUrl,
+      imageUrl: uploadImage,
     };
 
     axios
@@ -74,29 +102,46 @@ const CreateBanner = () => {
       .catch((err) => console.log(err.response));
   };
 
+  useEffect(() => {
+    if (image) {
+      handleUploadImage();
+    }
+  }, [image]);
+
   return (
     <div className="flex">
       <Sidebar />
 
-      <main className="flex flex-col items-center justify-center w-full h-screen text-white bg-slate-800">
+      <main className="flex flex-col items-center justify-center w-full h-screen text-white font-raleway bg-slate-800">
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
-          <h1 className="w-full text-3xl font-bold text-center text-white underline underline-offset-8">
+          <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">
             Create Banner
           </h1>
 
           <form
             onSubmit={createDataBanner}
-            className="max-w-sm p-5 mx-auto space-y-3 border rounded-xl"
+            className="max-w-sm p-5 mx-auto space-y-3 border min-w-max rounded-xl"
           >
-            {dataInput.map((input) => (
-              <div className="flex flex-col gap-1">
+            {dataInput.map((input, index) => (
+              <div key={index} className="flex flex-col gap-1">
                 <label htmlFor="name">{input.label}</label>
-                <input
-                  onChange={handleChange}
-                  className="px-2 py-1 rounded-lg text-slate-950"
-                  type={input.type}
-                  name={input.name}
-                />
+                {input.type === "file" ? (
+                  <Input
+                    onChange={handleChangeImage}
+                    className="px-2 py-1 rounded-lg"
+                    type={input.type}
+                    name={input.name}
+                    placeholder={input.placeholder}
+                  />
+                ) : (
+                  <input
+                    onChange={handleChange}
+                    className="px-2 py-1 rounded-lg text-slate-950"
+                    type={input.type}
+                    name={input.name}
+                    placeholder={input.placeholder}
+                  />
+                )}
               </div>
             ))}
             <div className="flex justify-end">

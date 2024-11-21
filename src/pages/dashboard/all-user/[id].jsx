@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AllUserContext } from "@/contexts/allUserContext";
+import { getCookie } from "cookies-next";
 
 const UpdateRole = () => {
   const router = useRouter();
@@ -15,7 +16,7 @@ const UpdateRole = () => {
   const { handleDataUser, allUsers } = useContext(AllUserContext);
 
   const handleUser = () => {
-    setRoleUser(allUsers.find((user) => user.id === router.query.id));
+    setRoleUser(allUsers?.find((user) => user.id === router.query.id));
   };
 
   const handleChange = (e) => {
@@ -35,7 +36,7 @@ const UpdateRole = () => {
     const config = {
       headers: {
         apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getCookie("token")}`,
       },
     };
     axios
@@ -61,18 +62,17 @@ const UpdateRole = () => {
   };
 
   useEffect(() => {
-    if (router.query.id) {
-      handleUser();
-    }
+    handleUser();
+    handleDataUser();
   }, [router.query.id]);
 
   return (
     <div className="flex">
       <Sidebar />
 
-      <main className="flex flex-col items-center justify-center w-full h-screen text-white bg-slate-800">
+      <main className="flex flex-col items-center justify-center w-full h-screen text-white font-raleway bg-slate-800">
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
-          <h1 className="w-full text-3xl font-bold text-center text-white underline underline-offset-8">
+          <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">
             Edit User
           </h1>
 
@@ -83,23 +83,23 @@ const UpdateRole = () => {
             <div className="flex flex-col gap-1">
               <label htmlFor="name">Name</label>
               <input
-                readOnly
+                disabled
                 onChange={handleChange}
-                className="px-2 py-1 rounded-lg text-slate-950"
+                className="px-2 disabled:text-slate-400 cursor-not-allowed disabled:bg-slate-200 py-1 rounded-lg text-slate-950"
                 type="text"
                 name="name"
-                value={roleUser.name}
+                value={roleUser?.name}
               />
             </div>
             <div className="flex flex-col gap-1">
               <label htmlFor="email">Email</label>
               <input
-                readOnly
+                disabled
                 onChange={handleChange}
-                className="px-2 py-1 rounded-lg text-slate-950"
+                className="px-2 disabled:text-slate-400 cursor-not-allowed disabled:bg-slate-200 py-1 rounded-lg text-slate-950"
                 type="email"
                 name="email"
-                value={roleUser.email}
+                value={roleUser?.email}
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -108,7 +108,7 @@ const UpdateRole = () => {
                 <div className="flex gap-2">
                   <input
                     onChange={handleChange}
-                    checked={roleUser.role === "admin"}
+                    checked={roleUser?.role === "admin"}
                     className="px-2 py-1 rounded-lg text-slate-950"
                     type="radio"
                     name="role"
@@ -120,7 +120,7 @@ const UpdateRole = () => {
                 <div className="flex gap-2">
                   <input
                     onChange={handleChange}
-                    checked={roleUser.role === "user"}
+                    checked={roleUser?.role === "user"}
                     className="px-2 py-1 rounded-lg text-slate-950"
                     type="radio"
                     name="role"
@@ -134,23 +134,23 @@ const UpdateRole = () => {
             <div className="flex flex-col gap-1">
               <label htmlFor="phoneNumber">Phone Number</label>
               <input
-                readOnly
+                disabled
                 onChange={handleChange}
-                className="px-2 py-1 rounded-lg text-slate-950"
+                className="px-2 py-1 disabled:text-slate-400 disabled:bg-slate-200 cursor-not-allowed rounded-lg text-slate-950"
                 type="number"
                 name="phoneNumber"
-                value={roleUser.phoneNumber}
+                value={roleUser?.phoneNumber}
               />
             </div>
             <div className="flex flex-col gap-1">
               <label htmlFor="profilePictureUrl">Profile Picture</label>
               <input
-                readOnly
+                disabled
                 onChange={handleChange}
-                className="px-2 py-1 rounded-lg text-slate-950"
+                className="px-2 py-1 disabled:text-slate-400 disabled:bg-slate-200 cursor-not-allowed rounded-lg text-slate-950"
                 type="text"
                 name="profilePictureUrl"
-                value={roleUser.profilePictureUrl}
+                value={roleUser?.profilePictureUrl}
               />
             </div>
             <div className="flex justify-end">
@@ -161,28 +161,6 @@ const UpdateRole = () => {
           </form>
         </div>
       </main>
-      {/* <div>update role</div>
-      <form onSubmit={handleSubmit}>
-        <input
-          onChange={handleChange}
-          checked={roleUser.role === "user"}
-          type="radio"
-          name="role"
-          id="user"
-          value="user"
-        />
-        <label htmlFor="admin">user</label>
-        <input
-          onChange={handleChange}
-          checked={roleUser.role === "admin"}
-          type="radio"
-          name="role"
-          id="admin"
-          value="admin"
-        />
-        <label htmlFor="">admin</label>
-        <button type="submit">Submit</button>
-      </form> */}
     </div>
   );
 };

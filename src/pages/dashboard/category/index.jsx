@@ -31,6 +31,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getCookie } from "cookies-next";
 
 const Category = () => {
   const { dataCategory, handleDataCategory } = useContext(CategoryContext);
@@ -39,7 +40,6 @@ const Category = () => {
     perPage: 5,
     totalPage: 0,
   });
-  console.log(dataCategory);
 
   const allPage = () => {
     setPagination({
@@ -67,24 +67,11 @@ const Category = () => {
     });
   };
 
-  // const handleDataCategory = () => {
-  //   const config = {
-  //     headers: {
-  //       apiKey: API_KEY,
-  //     },
-  //   };
-
-  //   axios
-  //     .get(`${BASE_URL + CATEGORY}`, config)
-  //     .then((res) => setDataCategory(res.data.data))
-  //     .catch((err) => console.log(err.response));
-  // };
-
   const deleteCategory = (id) => {
     const config = {
       headers: {
         apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getCookie("token")}`,
       },
     };
 
@@ -118,9 +105,9 @@ const Category = () => {
     <div className="flex">
       <Sidebar />
 
-      <main className="flex flex-col items-center justify-center w-full h-screen text-white bg-slate-800">
+      <main className="flex flex-col items-center justify-center w-full h-screen overflow-auto text-white font-raleway bg-slate-800">
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
-          <h1 className="w-full text-3xl font-bold text-left text-white underline underline-offset-8">
+          <h1 className="w-full text-3xl font-bold text-left text-white underline font-playfair-display underline-offset-8">
             Category List
           </h1>
 

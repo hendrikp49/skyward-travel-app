@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import NavbarUser from "@/components/Layout/Navbar";
 import { Trash2 } from "lucide-react";
 import Footer from "@/components/Layout/Footer";
+import { getCookie } from "cookies-next";
 
 const Cart = () => {
   const { dataCart, handleDataCart } = useContext(CartContext);
@@ -16,7 +17,7 @@ const Cart = () => {
     const config = {
       headers: {
         apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getCookie("token")}`,
       },
     };
 
@@ -40,7 +41,7 @@ const Cart = () => {
     const config = {
       headers: {
         apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getCookie("token")}`,
       },
     };
     axios

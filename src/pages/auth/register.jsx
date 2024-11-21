@@ -168,6 +168,7 @@ const Register = () => {
                           type={item.type}
                           name={item.name}
                           value={item.value}
+                          onChange={handleChange}
                         />
                         <label htmlFor="">{item.label}</label>
                       </div>

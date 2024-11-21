@@ -1,6 +1,7 @@
 import { CARTS, UPDATE_CART } from "@/pages/api/cart";
 import { API_KEY, BASE_URL } from "@/pages/api/config";
 import axios from "axios";
+import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -12,7 +13,7 @@ const EditQty = () => {
     const config = {
       headers: {
         apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getCookie("token")}`,
       },
     };
 
@@ -44,7 +45,7 @@ const EditQty = () => {
     const config = {
       headers: {
         apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getCookie("token")}`,
       },
     };
 

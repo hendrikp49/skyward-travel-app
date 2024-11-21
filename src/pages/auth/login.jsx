@@ -49,14 +49,9 @@ const Login = () => {
           progress: undefined,
           theme: "colored",
         });
-        console.log(res);
         setCookie("token", res.data.token);
         setCookie("role", res.data.data.role);
         setCookie("idUser", res.data.data.id);
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("name", res.data.data.name);
-        localStorage.setItem("email", res.data.data.email);
-        setCookie("image", res.data.data.profilePictureUrl);
         setTimeout(() => {
           if (res.data.data.role === "admin") {
             router.push("/dashboard");

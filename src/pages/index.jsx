@@ -18,6 +18,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { getCookie } from "cookies-next";
 
 const Home = () => {
   const router = useRouter();
@@ -116,28 +117,6 @@ const Home = () => {
         setDataPromo(res.data.data.slice(0, 6));
       })
       .catch((err) => console.log(err.response));
-  };
-
-  const handleLogout = () => {
-    const config = {
-      headers: {
-        apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    };
-
-    axios
-      .get(`${BASE_URL + LOGOUT}`, config)
-      .then((res) => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("name");
-        localStorage.removeItem("email");
-        alert("Logout Success");
-        setTimeout(() => {
-          router.push("/auth/login");
-        }, 2000);
-      })
-      .catch((err) => console.log(err));
   };
 
   const rating = (banyaknyaRating) => {

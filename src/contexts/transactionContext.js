@@ -1,6 +1,7 @@
 import { API_KEY, BASE_URL } from "@/pages/api/config";
 import { TRANSACTIONS } from "@/pages/api/transaction";
 import axios from "axios";
+import { getCookie } from "cookies-next";
 import { createContext, useEffect, useState } from "react";
 
 export const TransactionContext = createContext();
@@ -11,7 +12,7 @@ const TransactionContextProvider = ({ children }) => {
     const config = {
       headers: {
         apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getCookie("token")}`,
       },
     };
 

@@ -3,6 +3,7 @@ import NavbarUser from "@/components/Layout/Navbar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -12,11 +13,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { API_KEY, BASE_URL } from "@/pages/api/config";
 import {
+  CANCEL_TRANSACTION,
   MY_TRANSACTIONS,
   UPDATE_TRANSACTION_PROOF,
 } from "@/pages/api/transaction";
 import { UPLOAD } from "@/pages/api/upload";
 import axios from "axios";
+import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -32,7 +35,7 @@ const MyTransaction = () => {
     const config = {
       headers: {
         apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getCookie("token")}`,
       },
     };
 
@@ -52,7 +55,7 @@ const MyTransaction = () => {
     const config = {
       headers: {
         apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getCookie("token")}`,
       },
     };
 
@@ -71,7 +74,7 @@ const MyTransaction = () => {
     const config = {
       headers: {
         apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getCookie("token")}`,
       },
     };
 
@@ -92,6 +95,53 @@ const MyTransaction = () => {
           progress: undefined,
           theme: "colored",
         });
+        handleDataTransaction();
+        setIsOpen(false);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const cancelTransaction = (id) => {
+    const dataTransactionDetail = dataTransaction.find(
+      (item) => item.id === id
+    );
+    if (dataTransactionDetail.status !== "pending") {
+      toast.warning("Just pending transaction can be cancelled", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+      setIsOpen(false);
+      return;
+    }
+
+    const config = {
+      headers: {
+        apiKey: API_KEY,
+        Authorization: `Bearer ${getCookie("token")}`,
+      },
+    };
+
+    axios
+      .post(`${BASE_URL + CANCEL_TRANSACTION + id}`, null, config)
+      .then((res) => {
+        toast.info("Transaction cancelled", {
+          position: "bottom-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+        setIsOpen(false);
+        handleDataTransaction();
       })
       .catch((err) => console.log(err));
   };
@@ -109,7 +159,7 @@ const MyTransaction = () => {
       <NavbarUser />
 
       <div className="mt-20 overflow-auto">
-        <div className="mx-auto space-y-10 min-w-96 md:max-w-3xl lg:max-w-5xl">
+        <div className="py-2 mx-auto space-y-10 min-w-96 md:max-w-3xl lg:max-w-5xl">
           <h1 className="text-2xl font-bold font-playfair-display">
             My Transaction
           </h1>
@@ -160,7 +210,7 @@ const MyTransaction = () => {
                     <DialogTrigger onClick={() => setIsOpen(true)}>
                       <button className="text-skyward-primary">Here</button>
                     </DialogTrigger>
-                    {isOpen ? (
+                    {isOpen && (
                       <DialogContent>
                         <DialogHeader>
                           <DialogTitle>Upload Proof of Payment</DialogTitle>
@@ -170,16 +220,13 @@ const MyTransaction = () => {
                           <Button
                             onClick={() => {
                               handleUploadImage(data.id);
-                              setTimeout(() => {
-                                setIsOpen(false);
-                              }, 2000);
                             }}
                           >
                             Save Changes
                           </Button>
                         </DialogFooter>
                       </DialogContent>
-                    ) : null}
+                    )}
                   </Dialog>
                 </p>
                 <a
@@ -187,7 +234,7 @@ const MyTransaction = () => {
                   target="_blank"
                   className={`text-right ${
                     data.proofPaymentUrl ? "underline text-blue-600" : null
-                  }  line-clamp-1`}
+                  }  line-clamp-1 w-3/5`}
                 >
                   {data.proofPaymentUrl
                     ? data.proofPaymentUrl
@@ -196,10 +243,34 @@ const MyTransaction = () => {
               </div>
 
               <div className="flex items-center justify-between px-3 py-5 mt-10 overflow-auto text-white rounded-xl bg-gradient-to-br from-skyward-primary to-fuchsia-500">
-                <p className="text-sm">
-                  Status :{" "}
-                  <span className="text-xl font-medium">{data.status}</span>
-                </p>
+                <div className="space-y-1">
+                  <p className="text-sm">
+                    Status :{" "}
+                    <span className="text-xl font-medium">{data.status}</span>
+                  </p>
+                  <Dialog>
+                    <DialogTrigger onClick={() => setIsOpen(true)}>
+                      <Button variant="destructive">Cancel Transaction</Button>
+                    </DialogTrigger>
+                    {isOpen && (
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>
+                            Are you sure you want to cancel this transaction?
+                          </DialogTitle>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <DialogClose asChild>
+                            <Button variant="outline">Cancel</Button>
+                          </DialogClose>
+                          <Button onClick={() => cancelTransaction(data.id)}>
+                            Confirm
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    )}
+                  </Dialog>
+                </div>
                 <div className="flex flex-col items-end">
                   <p className="text-sm">Total Price : </p>
                   <span className="text-2xl font-medium">
@@ -216,35 +287,6 @@ const MyTransaction = () => {
               </div>
             </div>
           ))}
-
-          {/* <div className="flex items-center justify-between px-3 py-5 text-white rounded-lg bg-skyward-primary">
-            <div className="flex items-center justify-center gap-2 lg:gap-5">
-              <div className="text-right">
-                <p className="text-xs line-through text-black/30">
-                  {`Rp. ${dataCart
-                    .reduce(
-                      (acc, item) => acc + item.activity.price * item.quantity,
-                      0
-                    )
-                    .toLocaleString("id")}`}
-                </p>
-                <span className="text-xl font-medium">
-                  {`Rp. ${dataCart
-                    .reduce(
-                      (acc, item) =>
-                        acc + item.activity.price_discount * item.quantity,
-                      0
-                    )
-                    .toLocaleString("id")}`}
-                </span>
-              </div>
-              <div>
-                <Link href="/user/cart/checkout">
-                  <Button variant="secondary">Checkout</Button>
-                </Link>
-              </div>
-            </div>
-          </div> */}
         </div>
       </div>
 

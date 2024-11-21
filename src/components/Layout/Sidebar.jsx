@@ -11,7 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { deleteCookie } from "cookies-next";
+import { deleteCookie, getCookie } from "cookies-next";
 import {
   HandCoins,
   Home,
@@ -27,14 +27,19 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { UserContext } from "@/contexts/userContext";
+import { IsOpenContext } from "@/contexts/isOpen";
 
 const Sidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
+  const { user, handleUser } = useContext(UserContext);
+  const { isOpen, handleOpen } = useContext(IsOpenContext);
+  const [mounted, setMounted] = useState(false);
   const hamburger = (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -43,10 +48,10 @@ const Sidebar = () => {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      class="lucide lucide-menu"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="lucide lucide-menu"
     >
       <line x1="4" x2="20" y1="12" y2="12" />
       <line x1="4" x2="20" y1="6" y2="6" />
@@ -62,10 +67,10 @@ const Sidebar = () => {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      class="lucide lucide-x"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="lucide lucide-x"
     >
       <path d="M18 6 6 18" />
       <path d="m6 6 12 12" />
@@ -117,16 +122,12 @@ const Sidebar = () => {
     },
     {
       name: "My Profile",
-      link: "/dashboard/profile",
+      link: "/user/my-profile",
       icon: <User />,
     },
   ];
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("name");
-    localStorage.removeItem("email");
-    localStorage.removeItem("image");
     deleteCookie("token");
     deleteCookie("role");
     deleteCookie("idUser");
@@ -141,28 +142,35 @@ const Sidebar = () => {
       theme: "colored",
     });
     setTimeout(() => {
-      router.push("/auth/login");
+      router.push("/");
     }, 2000);
   };
+
+  useEffect(() => {
+    setMounted(true);
+    handleUser();
+  }, []);
 
   return (
     <aside
       className={`h-screen  inline-block py-5 pl-2 ${
         isOpen ? "pr-10 w-52" : "pr-2 w-16"
-      }  space-y-10 bg-skyward-tertiary ease-linear duration-300`}
+      }  space-y-10 bg-skyward-tertiary ease-linear font-raleway duration-300`}
     >
       <div className="flex flex-col justify-between h-full transition-all duration-200 ease-in-out transform">
         <div className="space-y-10 overflow-hidden">
           <div className="flex items-center gap-3 pl-3">
             {isOpen ? (
               <>
-                <button onClick={() => setIsOpen(!isOpen)}>{close}</button>
+                <button onClick={handleOpen}>{close}</button>
                 <p className="text-xl font-bold md:text-2xl font-casser">
                   <span className="text-skyward-primary">Sky</span>ward
                 </p>
               </>
             ) : (
-              <button onClick={() => setIsOpen(!isOpen)}>{hamburger}</button>
+              <button onClick={handleOpen} className="hidden md:block">
+                {hamburger}
+              </button>
             )}
           </div>
 
@@ -187,32 +195,39 @@ const Sidebar = () => {
           </ul>
         </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <div className="flex gap-3 pl-3">
-              <User />
-              {isOpen && <p>Username</p>}
-            </div>
-            <DropdownMenuContent>
-              {userMenu.map((item, index) => (
-                <Link key={index} href={item.link}>
-                  <DropdownMenuItem className="flex gap-2 cursor-pointer">
-                    {item.icon}
-                    {item.name}
-                  </DropdownMenuItem>
-                </Link>
-              ))}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={handleLogout}
-                className="flex gap-2 text-red-600 cursor-pointer"
-              >
-                <LogOut color="red" />
-                Logout
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenuTrigger>
-        </DropdownMenu>
+        {!mounted ? null : (
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <div className="flex items-center justify-center gap-3">
+                <Avatar>
+                  <AvatarImage src={getCookie("image")} />
+                  <AvatarFallback>
+                    <User />
+                  </AvatarFallback>
+                </Avatar>
+                {isOpen && <p className="text-left">{user.name}</p>}
+              </div>
+              <DropdownMenuContent className="p-2">
+                {userMenu.map((item, index) => (
+                  <Link key={index} href={item.link}>
+                    <DropdownMenuItem className="flex gap-2 cursor-pointer">
+                      {item.icon}
+                      {item.name}
+                    </DropdownMenuItem>
+                  </Link>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="flex gap-2 text-red-600 cursor-pointer"
+                >
+                  <LogOut color="red" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenuTrigger>
+          </DropdownMenu>
+        )}
       </div>
     </aside>
   );

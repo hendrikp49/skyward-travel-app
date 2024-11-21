@@ -1,10 +1,13 @@
 import Sidebar from "@/components/Layout/Sidebar";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ActivityContext } from "@/contexts/activityContext";
 import { CategoryContext } from "@/contexts/categoryContext";
 import { CREATE_ACTIVITY } from "@/pages/api/activity";
 import { BASE_URL, API_KEY } from "@/pages/api/config";
+import { UPLOAD } from "@/pages/api/upload";
 import axios from "axios";
+import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -12,8 +15,10 @@ import "react-toastify/dist/ReactToastify.css";
 
 const CreateActivity = () => {
   const router = useRouter();
-  const { dataCategory } = useContext(CategoryContext);
+  const { dataCategory, handleDataCategory } = useContext(CategoryContext);
   const { handleDataActivity } = useContext(ActivityContext);
+  const [image, setImage] = useState(null);
+  const [uploadImage, setUploadImage] = useState(null);
   const [dataActivity, setDataActivity] = useState({
     title: "",
     description: "",
@@ -36,10 +41,26 @@ const CreateActivity = () => {
   };
 
   const handleChangeImage = (e) => {
-    setDataActivity({
-      ...dataActivity,
-      imageUrls: [...dataActivity.imageUrls, e.target.value],
-    });
+    setImage(e.target.files[0]);
+  };
+
+  const handleUploadImage = () => {
+    const config = {
+      headers: {
+        apiKey: API_KEY,
+        Authorization: `Bearer ${getCookie("token")}`,
+      },
+    };
+
+    const formData = new FormData();
+    formData.append("image", image);
+
+    axios
+      .post(`${BASE_URL + UPLOAD}`, formData, config)
+      .then((res) => {
+        setUploadImage(res.data.url);
+      })
+      .catch((err) => console.log(err.response));
   };
 
   const handleSubmit = (e) => {
@@ -48,7 +69,7 @@ const CreateActivity = () => {
     const config = {
       headers: {
         apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getCookie("token")}`,
       },
     };
 
@@ -58,7 +79,7 @@ const CreateActivity = () => {
       categoryId: dataActivity.categoryId,
       province: dataActivity.province,
       city: dataActivity.city,
-      imageUrls: dataActivity.imageUrls,
+      imageUrls: [uploadImage],
       facilities: dataActivity.facilities,
       price: Number(dataActivity.price),
       price_discount: Number(dataActivity.price_discount),
@@ -159,25 +180,36 @@ const CreateActivity = () => {
     {
       label: "Image Url",
       name: "imageUrls",
-      type: "text",
+      type: "file",
       placeholder: "",
       change: handleChangeImage,
     },
   ];
 
+  useEffect(() => {
+    handleDataCategory();
+    handleDataActivity();
+  }, []);
+
+  useEffect(() => {
+    if (image) {
+      handleUploadImage();
+    }
+  }, [image]);
+
   return (
     <div className="flex">
       <Sidebar />
 
-      <main className="flex flex-col items-center justify-center w-full h-screen pb-5 text-white bg-slate-800">
+      <main className="flex flex-col items-center justify-center w-full h-screen pb-5 overflow-auto text-white font-raleway bg-slate-800">
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
-          <h1 className="w-full text-3xl font-bold text-center text-white underline underline-offset-8">
+          <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">
             Create Activity
           </h1>
 
           <form
             onSubmit={handleSubmit}
-            className="grid max-w-sm grid-cols-2 gap-5 p-5 mx-auto border rounded-xl"
+            className="grid max-w-sm grid-cols-2 gap-5 p-5 mx-auto border min-w-max rounded-xl"
           >
             {dataInput.map((input, index) => (
               <div key={index} className="flex flex-col gap-1">
@@ -188,7 +220,7 @@ const CreateActivity = () => {
                     className="px-2 py-1 rounded-lg text-slate-950"
                     name={input.name}
                   >
-                    <option disabled value="">
+                    <option readOnly className="text-slate-300">
                       Select Category
                     </option>
                     {dataCategory.map((category, index) => (
@@ -197,6 +229,13 @@ const CreateActivity = () => {
                       </option>
                     ))}
                   </select>
+                ) : input.name === "imageUrls" ? (
+                  <Input
+                    onChange={handleChangeImage}
+                    className="px-2 py-1 bg-white rounded-lg text-slate-950"
+                    type={input.type}
+                    name={input.name}
+                  />
                 ) : (
                   <input
                     onChange={input.change}
@@ -208,7 +247,7 @@ const CreateActivity = () => {
                 )}
               </div>
             ))}
-            <div className="flex justify-end">
+            <div className="flex items-end justify-end">
               <Button variant="secondary" type="submit">
                 Save Changes
               </Button>

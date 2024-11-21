@@ -26,17 +26,16 @@ import { usePathname } from "next/navigation";
 import { TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { Tooltip } from "@radix-ui/react-tooltip";
 import { CartContext } from "@/contexts/cartContext";
+import { UserContext } from "@/contexts/userContext";
 
 const NavbarUser = () => {
   const { dataCart, handleDataCart } = useContext(CartContext);
+  const { user, handleUser } = useContext(UserContext);
   const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const token = getCookie("token");
-  const role = getCookie("role");
-  const idUser = getCookie("idUser");
-  const imageUser = getCookie("image");
   const navItem = [
     {
       name: "Home",
@@ -59,10 +58,6 @@ const NavbarUser = () => {
   const handleOpen = () => setIsOpen(!isOpen);
 
   const handleLogout = (id) => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("name");
-    localStorage.removeItem("email");
-    localStorage.removeItem("image");
     deleteCookie("token");
     deleteCookie("role");
     deleteCookie("idUser");
@@ -83,6 +78,7 @@ const NavbarUser = () => {
 
   useEffect(() => {
     setMounted(true);
+    handleUser();
   }, []);
 
   useEffect(() => {
@@ -113,14 +109,62 @@ const NavbarUser = () => {
           ))}
         </ul>
         {!mounted ? null : (
-          <div className="flex items-center justify-center gap-2">
-            {token && role === "admin" && (
-              <DropdownMenu>
-                <DropdownMenuTrigger>
+          <div className="flex items-center justify-center gap-3 md:gap-5">
+            {token && user.role === "user" && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Link href={"/user/cart"} className="relative">
+                      <ShoppingCart />
+                      <div className="absolute flex items-center justify-center w-5 text-xs text-white rounded-full -top-4 -right-3 bg-skyward-primary aspect-square">
+                        {dataCart.length}
+                      </div>
+                    </Link>
+                    <TooltipContent>My Cart</TooltipContent>
+                  </TooltipTrigger>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+            <DropdownMenu>
+              {token && (
+                <DropdownMenuTrigger className="flex items-center gap-2">
                   <Avatar>
-                    <AvatarImage src={imageUser} />
+                    <AvatarImage src={user.profilePictureUrl} />
+
+                    <AvatarFallback>
+                      <User />
+                    </AvatarFallback>
                   </Avatar>
+                  <span className="hidden text-xs md:block">{user.name}</span>
                 </DropdownMenuTrigger>
+              )}
+              {token && user.role === "user" ? (
+                <DropdownMenuContent className="p-2 space-y-2">
+                  <DropdownMenuItem>
+                    <Link className="flex gap-2" href={"/user/my-profile"}>
+                      <User />
+                      <span>My Profile</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link className="flex gap-2" href={"/user/my-transaction"}>
+                      <ShoppingBag />
+                      <span>My Transaction</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <button
+                      variant="ghost"
+                      onClick={() => handleLogout(user.id)}
+                      className="flex gap-2"
+                    >
+                      <LogOut color="red" />
+                      <span className="text-red-700">Logout</span>
+                    </button>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              ) : (
                 <DropdownMenuContent>
                   <DropdownMenuItem>
                     <Link className="flex gap-2" href={"/dashboard"}>
@@ -136,79 +180,24 @@ const NavbarUser = () => {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
-                    <Button
+                    <button
                       variant="ghost"
-                      onClick={() => handleLogout(idUser)}
+                      onClick={() => handleLogout(user.id)}
                       className="flex gap-2"
                     >
                       <LogOut color="red" />
                       <span className="text-red-700">Logout</span>
-                    </Button>
+                    </button>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-            {token && role === "user" && (
-              <div className="flex items-center justify-center gap-5">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Link href={"/user/cart"} className="relative">
-                        <ShoppingCart />
-                        <div className="absolute flex items-center justify-center w-5 text-xs text-white rounded-full -top-4 -right-3 bg-skyward-primary aspect-square">
-                          {dataCart.length}
-                        </div>
-                      </Link>
-                      <TooltipContent>My Cart</TooltipContent>
-                    </TooltipTrigger>
-                  </Tooltip>
-                </TooltipProvider>
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <Avatar>
-                      <AvatarImage src={imageUser} />
-                      <AvatarFallback>
-                        <User />
-                      </AvatarFallback>
-                    </Avatar>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="p-2 space-y-2">
-                    <DropdownMenuItem>
-                      <Link className="flex gap-2" href={"/user/my-profile"}>
-                        <User />
-                        <span>My Profile</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Link
-                        className="flex gap-2"
-                        href={"/user/my-transaction"}
-                      >
-                        <ShoppingBag />
-                        <span>My Transaction</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                      <button
-                        variant="ghost"
-                        onClick={() => handleLogout(idUser)}
-                        className="flex gap-2"
-                      >
-                        <LogOut color="red" />
-                        <span className="text-red-700">Logout</span>
-                      </button>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            )}
+              )}
+            </DropdownMenu>
+
             {!token && (
               <Link href={"/auth/login"}>
                 <Button>Login</Button>
               </Link>
             )}
-
             {/* hamburger menu */}
             <div className="md:hidden">
               <Button variant="ghost" onClick={handleOpen}>

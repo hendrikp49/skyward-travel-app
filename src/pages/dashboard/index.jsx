@@ -4,11 +4,13 @@ import axios from "axios";
 import { API_KEY, BASE_URL } from "@/pages/api/config";
 import { ALL_BANNER } from "@/pages/api/banner";
 import { handleDataBannerRedux } from "@/store/bannerSlice";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
+import { UserContext } from "@/contexts/userContext";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
   const { dataBanner } = useSelector((state) => state.banner);
+  const { user } = useContext(UserContext);
 
   const handleDataBanner = () => {
     const config = {
@@ -25,8 +27,6 @@ const Dashboard = () => {
       .catch((err) => console.log(err.response));
   };
 
-  console.log(dataBanner);
-
   useEffect(() => {
     handleDataBanner();
   }, []);
@@ -35,7 +35,11 @@ const Dashboard = () => {
     <div className="flex">
       <Sidebar />
 
-      <main className="flex items-center justify-center w-full h-screen bg-slate-800">
+      <main className="flex flex-col items-center justify-center w-full h-screen font-poppins text-slate-100 bg-slate-800">
+        <h1 className="text-3xl font-medium text-center font-casser md:text-5xl">
+          Welcome Back, {user.name}
+        </h1>
+        <p className="mt-2 text-center md:text-lg">Have a nice day! 😉</p>
         <img
           src="images/dashboard.png"
           alt="dashboard image"

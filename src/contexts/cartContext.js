@@ -1,6 +1,7 @@
 import { CARTS } from "@/pages/api/cart";
 import { API_KEY, BASE_URL } from "@/pages/api/config";
 import axios from "axios";
+import { getCookie } from "cookies-next";
 import { createContext, useState } from "react";
 
 export const CartContext = createContext();
@@ -12,7 +13,7 @@ const CartContextProvider = ({ children }) => {
     const config = {
       headers: {
         apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getCookie("token")}`,
       },
     };
     axios

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { API_KEY, BASE_URL } from "../../api/config";
 import axios from "axios";
 import { UPDATE_USER, LOGGED_USER } from "../../api/user";
+import { getCookie } from "cookies-next";
 
 const UpdateProfile = () => {
   const [dataUser, setDataUser] = useState({});
@@ -10,7 +11,7 @@ const UpdateProfile = () => {
     const config = {
       headers: {
         apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getCookie("token")}`,
       },
     };
 
@@ -35,7 +36,7 @@ const UpdateProfile = () => {
     const config = {
       headers: {
         apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getCookie("token")}`,
       },
     };
 
@@ -44,8 +45,6 @@ const UpdateProfile = () => {
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
   };
-
-  // console.log(dataUser);
 
   useEffect(() => {
     handleUser();

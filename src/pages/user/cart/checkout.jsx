@@ -12,6 +12,7 @@ import { CREATE_TRANSACTION } from "@/pages/api/transaction";
 import { PAYMENT_METHOD } from "@/pages/api/payment";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
+import { getCookie } from "cookies-next";
 
 const Cart = () => {
   const router = useRouter();
@@ -47,7 +48,7 @@ const Cart = () => {
     const config = {
       headers: {
         apiKey: API_KEY,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getCookie("token")}`,
       },
     };
 
