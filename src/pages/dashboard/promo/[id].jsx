@@ -159,7 +159,7 @@ const DetailPromo = () => {
   }, [image]);
 
   return (
-    <div className="flex">
+    <div className="flex bg-slate-800 md:h-screen lg:h-auto">
       <Sidebar />
 
       <main

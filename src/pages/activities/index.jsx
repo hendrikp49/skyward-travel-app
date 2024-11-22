@@ -240,7 +240,7 @@ const Activity = () => {
             {currentData.map((activity) => (
               <div
                 key={activity.id}
-                className="max-w-full pb-5 space-y-3 overflow-hidden duration-200 ease-in-out transform border shadow-md hover:shadow-none hover:translate-y-1 min-h-fit w-72 rounded-xl"
+                className="pb-5 space-y-3 overflow-hidden duration-200 ease-in-out transform border shadow-md hover:shadow-none hover:translate-y-1 w-72 h-[450px] rounded-xl"
               >
                 <img
                   src={activity.imageUrls[0]}

@@ -69,7 +69,7 @@ const UpdateRole = () => {
   }, [router.query.id]);
 
   return (
-    <div className="flex">
+    <div className="flex md:h-screen lg:h-auto bg-slate-800">
       <Sidebar />
 
       <main
