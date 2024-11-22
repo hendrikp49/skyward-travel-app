@@ -1,6 +1,7 @@
 import Sidebar from "@/components/Layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { IsOpenContext } from "@/contexts/isOpen";
 import { PromoContext } from "@/contexts/promoContext";
 import { API_KEY, BASE_URL } from "@/pages/api/config";
 import { PROMO_ID, UPDATE_PROMO } from "@/pages/api/promo";
@@ -15,6 +16,7 @@ import "react-toastify/dist/ReactToastify.css";
 const DetailPromo = () => {
   const router = useRouter();
   const { dataPromo, handleDataPromo } = useContext(PromoContext);
+  const { isOpen } = useContext(IsOpenContext);
   const [image, setImage] = useState(null);
   const [promoId, setPromoId] = useState({});
 
@@ -24,14 +26,14 @@ const DetailPromo = () => {
       type: "text",
       label: "Title Promo",
       placeholder: "Promo Name",
-      value: promoId.title,
+      value: promoId?.title,
     },
     {
       name: "description",
       type: "text",
       label: "Description Promo",
       placeholder: "Promo Description",
-      value: promoId.description,
+      value: promoId?.description,
     },
     {
       name: "imageUrl",
@@ -43,28 +45,28 @@ const DetailPromo = () => {
       type: "text",
       label: "Terms & Condition",
       placeholder: "Terms & Condition",
-      value: promoId.terms_condition,
+      value: promoId?.terms_condition,
     },
     {
       name: "promo_code",
       type: "text",
       label: "Promo Code",
       placeholder: "Promo Code",
-      value: promoId.promo_code,
+      value: promoId?.promo_code,
     },
     {
       name: "promo_discount_price",
       type: "number",
       label: "Promo Discount Price",
       placeholder: "Promo Discount Price",
-      value: promoId.promo_discount_price,
+      value: promoId?.promo_discount_price,
     },
     {
       name: "minimum_claim_price",
       type: "number",
       label: "Minimum Claim Price",
       placeholder: "Minimum Claim Price",
-      value: promoId.minimum_claim_price,
+      value: promoId?.minimum_claim_price,
     },
   ];
 
@@ -160,7 +162,11 @@ const DetailPromo = () => {
     <div className="flex">
       <Sidebar />
 
-      <main className="flex flex-col items-center justify-center w-full h-screen pb-5 overflow-auto text-white font-raleway bg-slate-800">
+      <main
+        className={`flex flex-col items-center justify-center w-full ${
+          isOpen ? "ml-[208px]" : "ml-[63px]"
+        }  h-full font-poppins text-slate-100 ease-linear duration-300 bg-slate-800 py-2`}
+      >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
           <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">
             Edit Promo
@@ -168,12 +174,12 @@ const DetailPromo = () => {
 
           <form
             onSubmit={editPromo}
-            className="grid max-w-sm grid-cols-2 gap-5 p-5 mx-auto border min-w-max rounded-xl"
+            className="grid max-w-sm grid-cols-1 gap-5 p-5 mx-auto border min-w-max rounded-xl"
           >
             <img
-              src={promoId.imageUrl}
-              alt={promoId.title}
-              className="object-cover w-full h-32 col-span-2 rounded-md"
+              src={promoId?.imageUrl}
+              alt={promoId?.title}
+              className="object-cover w-full h-32 rounded-md"
             />
             {dataInput.map((input, index) => (
               <div key={index} className="flex flex-col gap-1">
@@ -193,7 +199,12 @@ const DetailPromo = () => {
                     type={input.type}
                     name={input.name}
                     placeholder={input.placeholder}
-                    value={input.value}
+                    value={
+                      input.name === "promo_discount_price" ||
+                      input.name === "minimum_claim_price"
+                        ? input.value?.toLocaleString("id")
+                        : input.value
+                    }
                   />
                 )}
               </div>

@@ -1,18 +1,20 @@
 import Sidebar from "@/components/Layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { IsOpenContext } from "@/contexts/isOpen";
 import { CATEGORY_ID, UPDATE_CATEGORY } from "@/pages/api/category";
 import { API_KEY, BASE_URL } from "@/pages/api/config";
 import { UPLOAD } from "@/pages/api/upload";
 import axios from "axios";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const DetailCategory = () => {
   const router = useRouter();
   const [image, setImage] = useState(null);
+  const { isOpen } = useContext(IsOpenContext);
   const [dataCategory, setDataCategory] = useState({
     name: "",
     imageUrl: "",
@@ -128,7 +130,11 @@ const DetailCategory = () => {
     <div className="flex">
       <Sidebar />
 
-      <main className="flex flex-col items-center justify-center w-full h-screen overflow-auto text-white font-raleway bg-slate-800">
+      <main
+        className={`flex flex-col items-center justify-center w-full ${
+          isOpen ? "ml-[208px]" : "ml-[63px]"
+        }  h-screen font-poppins text-slate-100 py-2 ease-linear duration-300 bg-slate-800`}
+      >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
           <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">
             Edit Category
@@ -136,7 +142,7 @@ const DetailCategory = () => {
 
           <form
             onSubmit={handleSubmit}
-            className="max-w-sm p-5 mx-auto space-y-3 border min-w-max rounded-xl"
+            className="max-w-sm p-5 mx-auto space-y-3 border rounded-xl"
           >
             <img
               src={dataCategory?.imageUrl}

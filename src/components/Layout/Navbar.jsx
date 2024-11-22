@@ -4,11 +4,15 @@ import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
+  BookOpenText,
   Database,
+  Home,
   LogOut,
   Menu,
+  PlaneTakeoff,
   ShoppingBag,
   ShoppingCart,
+  TicketPercent,
   User,
   X,
 } from "lucide-react";
@@ -40,18 +44,22 @@ const NavbarUser = () => {
     {
       name: "Home",
       href: "/",
+      icon: <Home />,
     },
     {
       name: "About",
       href: "/about",
+      icon: <BookOpenText />,
     },
     {
       name: "Activities",
       href: "/activities",
+      icon: <PlaneTakeoff />,
     },
     {
       name: "Offers",
       href: "/offers",
+      icon: <TicketPercent />,
     },
   ];
 
@@ -72,7 +80,7 @@ const NavbarUser = () => {
       theme: "colored",
     });
     setTimeout(() => {
-      router.push("/auth/login");
+      router.push("/");
     }, 2000);
   };
 
@@ -228,10 +236,11 @@ const NavbarUser = () => {
           <X />
         </Button>
 
-        <ul className="text-center">
+        <ul className="">
           {navItem.map((item, index) => (
-            <Link key={index} href={item.href}>
-              <li className="py-3 duration-200 ease-in-out hover:bg-blue-300">
+            <Link key={index} href={item.href} className="">
+              <li className="flex gap-5 py-5 pl-5 duration-200 ease-in-out hover:bg-blue-300">
+                {item.icon}
                 {item.name}
               </li>
             </Link>

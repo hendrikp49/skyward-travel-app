@@ -94,10 +94,12 @@ const Footer = () => {
       <hr className="h-0.5 mt-10 bg-black/40" />
 
       <div className="flex flex-col items-center gap-3 mt-5 md:flex-row md:justify-between">
-        <p className="text-sm">©2024 Skyward. All rights reserved.</p>
+        <p className="text-sm text-center">
+          © 2024 Skyward | Built with passion by Hendrik Prakoso.
+        </p>
         <div className="flex gap-3 md:gap-7">
           {socmed.map((item, index) => (
-            <Link key={index} href={item.link}>
+            <Link key={index} href={item.link} target="_blank">
               {item.icon}
             </Link>
           ))}

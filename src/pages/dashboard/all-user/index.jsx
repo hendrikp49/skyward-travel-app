@@ -17,7 +17,6 @@ import {
   ChevronsLeft,
   ChevronsRight,
   FilePen,
-  Trash2,
 } from "lucide-react";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import {
@@ -25,9 +24,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { all } from "axios";
+import { IsOpenContext } from "@/contexts/isOpen";
 
 const AllUser = () => {
+  const { isOpen } = useContext(IsOpenContext);
   const { allUsers, handleDataUser } = useContext(AllUserContext);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -73,7 +73,11 @@ const AllUser = () => {
     <div className="flex">
       <Sidebar />
 
-      <main className="flex flex-col items-center justify-center w-full h-screen text-white font-raleway bg-slate-800">
+      <main
+        className={`flex flex-col items-center self-end justify-center w-full ${
+          isOpen ? "ml-[208px]" : "ml-[63px]"
+        }  h-screen font-poppins text-slate-100 ease-linear duration-300 bg-slate-800`}
+      >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
           <h1 className="w-full text-3xl font-bold text-left text-white underline font-playfair-display underline-offset-8">
             All User

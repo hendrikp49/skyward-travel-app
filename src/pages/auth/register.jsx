@@ -7,10 +7,13 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Eye, EyeClosed } from "lucide-react";
 
 const Register = () => {
   const router = useRouter();
   const [passwordError, setPasswordError] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [isOpenRepeat, setIsOpenRepeat] = useState(false);
   const [dataRegister, setDataRegister] = useState({
     name: "",
     email: "",
@@ -173,6 +176,56 @@ const Register = () => {
                         <label htmlFor="">{item.label}</label>
                       </div>
                     ))}
+                  </div>
+                ) : item.name === "password" ? (
+                  <div className="relative">
+                    <input
+                      className="w-full py-1 pl-3 pr-10 text-sm border rounded-md text-slate-800 placeholder:text-sm"
+                      onChange={handleChange}
+                      type={isOpen ? "text" : item.type}
+                      name={item.name}
+                      placeholder={item.placeholder}
+                    />
+                    {isOpen ? (
+                      <Eye
+                        onClick={() => setIsOpen(!isOpen)}
+                        size={20}
+                        color="#64748b"
+                        className="absolute cursor-pointer top-1 right-2"
+                      />
+                    ) : (
+                      <EyeClosed
+                        onClick={() => setIsOpen(!isOpen)}
+                        size={20}
+                        color="#64748b"
+                        className="absolute cursor-pointer top-1 right-2"
+                      />
+                    )}
+                  </div>
+                ) : item.name === "passwordRepeat" ? (
+                  <div className="relative">
+                    <input
+                      className="w-full py-1 pl-3 pr-10 text-sm border rounded-md text-slate-800 placeholder:text-sm"
+                      onChange={handleChange}
+                      type={isOpenRepeat ? "text" : item.type}
+                      name={item.name}
+                      placeholder={item.placeholder}
+                    />
+                    {isOpenRepeat ? (
+                      <Eye
+                        onClick={() => setIsOpenRepeat(!isOpenRepeat)}
+                        size={20}
+                        color="#64748b"
+                        className="absolute cursor-pointer top-1 right-2"
+                      />
+                    ) : (
+                      <EyeClosed
+                        onClick={() => setIsOpenRepeat(!isOpenRepeat)}
+                        size={20}
+                        color="#64748b"
+                        className="absolute cursor-pointer top-1 right-2"
+                      />
+                    )}
                   </div>
                 ) : (
                   <>

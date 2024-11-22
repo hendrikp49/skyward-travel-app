@@ -41,7 +41,7 @@ const DetailActivity = () => {
 
   const handleAddToCart = () => {
     if (token && role === "admin") {
-      toast.error("You are not allowed to add to cart", {
+      toast.error("You are an Admin. You are not allowed to add to cart", {
         position: "top-center",
         autoClose: 2000,
         hideProgressBar: false,

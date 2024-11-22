@@ -2,7 +2,8 @@ import Sidebar from "@/components/Layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BannerContext } from "@/contexts/bannerContext";
-import { BANNER_ID, UPDATE_BANNER } from "@/pages/api/banner";
+import { IsOpenContext } from "@/contexts/isOpen";
+import { UPDATE_BANNER } from "@/pages/api/banner";
 import { API_KEY, BASE_URL } from "@/pages/api/config";
 import { UPLOAD } from "@/pages/api/upload";
 import axios from "axios";
@@ -14,6 +15,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const DetailBanner = () => {
   const { dataBanner, handleDataBanner } = useContext(BannerContext);
+  const { isOpen } = useContext(IsOpenContext);
   const [bannerId, setBannerId] = useState({});
   const [image, setImage] = useState(null);
   const router = useRouter();
@@ -119,23 +121,27 @@ const DetailBanner = () => {
     <div className="flex">
       <Sidebar />
 
-      <main className="flex flex-col items-center justify-center w-full h-screen text-white font-raleway bg-slate-800">
-        <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
+      <main
+        className={`flex flex-col items-center justify-center w-full ${
+          isOpen ? "ml-[208px]" : "ml-[63px]"
+        }  h-screen font-poppins text-slate-100 ease-linear duration-300 bg-slate-800`}
+      >
+        <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl">
           <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">
             Edit Banner
           </h1>
 
           <form
             onSubmit={handleSubmit}
-            className="max-w-sm p-5 mx-auto space-y-3 border min-w-max rounded-xl"
+            className="max-w-sm p-5 mx-auto space-y-3 border rounded-xl"
           >
             <img
               src={bannerId?.imageUrl}
               alt={bannerId?.name}
               className="object-cover w-full rounded-md h-44"
             />
-            {dataInput.map((input) => (
-              <div className="flex flex-col gap-1">
+            {dataInput.map((input, index) => (
+              <div key={index} className="flex flex-col gap-1">
                 <label>{input.label}</label>
                 {input.type === "file" ? (
                   <Input

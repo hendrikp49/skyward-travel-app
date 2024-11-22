@@ -2,7 +2,6 @@ import { API_KEY } from "@/pages/api/config";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { BASE_URL } from "@/pages/api/config";
-import { ALL_BANNER } from "@/pages/api/banner";
 import Link from "next/link";
 import { DELETE_BANNER } from "@/pages/api/banner";
 import Sidebar from "@/components/Layout/Sidebar";
@@ -34,9 +33,21 @@ import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getCookie } from "cookies-next";
+import {
+  Dialog,
+  DialogClose,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogContent,
+} from "@/components/ui/dialog";
+import { IsOpenContext } from "@/contexts/isOpen";
 
 const Banner = () => {
   const { dataBanner, handleDataBanner } = useContext(BannerContext);
+  const { isOpen } = useContext(IsOpenContext);
+  const [openModal, setOpenModal] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
     perPage: 5,
@@ -64,6 +75,7 @@ const Banner = () => {
           progress: undefined,
           theme: "dark",
         });
+        setOpenModal(false);
         const updatedBanner = dataBanner.filter((banner) => banner.id !== id);
         handleDataBanner(updatedBanner);
       })
@@ -108,7 +120,11 @@ const Banner = () => {
     <div className="flex">
       <Sidebar />
 
-      <main className="flex flex-col items-center justify-center w-full h-screen text-white font-raleway bg-slate-800">
+      <main
+        className={`flex flex-col items-center self-end justify-center w-full ${
+          isOpen ? "ml-[208px]" : "ml-[63px]"
+        }  h-screen font-poppins text-slate-100 ease-linear duration-300 bg-slate-800`}
+      >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl">
           <h1 className="w-full text-3xl font-bold text-left text-white underline font-playfair-display underline-offset-8">
             Banner List
@@ -153,28 +169,64 @@ const Banner = () => {
                       <Tooltip>
                         <TooltipTrigger>
                           <Link href={`/dashboard/banner/${item.id}`}>
-                            <FilePen color="orange" />
+                            <button>
+                              <FilePen color="orange" />
+                            </button>
                           </Link>
                         </TooltipTrigger>
                         <TooltipContent>Edit</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
 
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <span onClick={() => deleteBanner(item.id)}>
-                            <Trash2 color="#f54531" />
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>Delete</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <Dialog>
+                      <DialogTrigger onClick={() => setOpenModal(true)}>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <button>
+                                <Trash2 color="#f54531" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Delete</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </DialogTrigger>
+                      {openModal && (
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>
+                              Are you sure want to delete this banner?
+                            </DialogTitle>
+                          </DialogHeader>
+                          <DialogFooter>
+                            <DialogClose asChild>
+                              <Button variant="outline">Cancel</Button>
+                            </DialogClose>
+                            <Button onClick={() => deleteBanner(item.id)}>
+                              Confirm
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      )}
+                    </Dialog>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
+
+          {/* <Dialog>
+                      <DialogTrigger asChild></DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Are you sure?</DialogTitle>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <DialogClose asChild></DialogClose>
+                          
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog> */}
 
           <div className="flex gap-3">
             <div className="flex">

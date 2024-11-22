@@ -1,6 +1,7 @@
 import Sidebar from "@/components/Layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { IsOpenContext } from "@/contexts/isOpen";
 import { PromoContext } from "@/contexts/promoContext";
 import { API_KEY, BASE_URL } from "@/pages/api/config";
 import { CREATE_PROMO } from "@/pages/api/promo";
@@ -15,6 +16,7 @@ import "react-toastify/dist/ReactToastify.css";
 const CreatePromo = () => {
   const { handleDataPromo } = useContext(PromoContext);
   const router = useRouter();
+  const { isOpen } = useContext(IsOpenContext);
   const [image, setImage] = useState(null);
   const [uploadImage, setUploadImage] = useState(null);
   const [dataPromo, setDataPromo] = useState({
@@ -152,7 +154,11 @@ const CreatePromo = () => {
     <div className="flex">
       <Sidebar />
 
-      <main className="flex flex-col items-center justify-center w-full h-screen pb-5 overflow-auto text-white font-raleway bg-slate-800">
+      <main
+        className={`flex flex-col items-center justify-center w-full ${
+          isOpen ? "ml-[208px]" : "ml-[63px]"
+        }  h-full font-poppins text-slate-100 ease-linear duration-300 bg-slate-800 py-2`}
+      >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
           <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">
             Create Promo
@@ -160,7 +166,7 @@ const CreatePromo = () => {
 
           <form
             onSubmit={submitData}
-            className="grid max-w-sm grid-cols-2 gap-5 p-5 mx-auto border min-w-max rounded-xl"
+            className="grid max-w-sm grid-cols-1 gap-5 p-5 mx-auto border min-w-max rounded-xl"
           >
             {dataInput.map((input) => (
               <div className="flex flex-col gap-1">
@@ -168,7 +174,7 @@ const CreatePromo = () => {
                 {input.type === "file" ? (
                   <Input
                     onChange={handleChangeImage}
-                    className="px-2 py-1 rounded-lg text-slate-950"
+                    className="px-2 py-1 rounded-lg text-slate-950 bg-slate-100"
                     type={input.type}
                     name={input.name}
                     placeholder={input.placeholder}
@@ -184,7 +190,7 @@ const CreatePromo = () => {
                 )}
               </div>
             ))}
-            <div className="flex justify-end col-span-2">
+            <div className="flex justify-end">
               <Button variant="secondary" type="submit">
                 Save Changes
               </Button>

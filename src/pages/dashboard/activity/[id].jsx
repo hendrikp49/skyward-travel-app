@@ -10,7 +10,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { ActivityContext } from "@/contexts/activityContext";
 import { CategoryContext } from "@/contexts/categoryContext";
-import { ACTIVITY_ID, UPDATE_ACTIVITY } from "@/pages/api/activity";
+import { IsOpenContext } from "@/contexts/isOpen";
+import { UPDATE_ACTIVITY } from "@/pages/api/activity";
 import { API_KEY, BASE_URL } from "@/pages/api/config";
 import { UPLOAD } from "@/pages/api/upload";
 import axios from "axios";
@@ -23,6 +24,7 @@ const DetailActivity = () => {
   const router = useRouter();
   const { dataCategory, handleDataCategory } = useContext(CategoryContext);
   const { dataActivity, handleDataActivity } = useContext(ActivityContext);
+  const { isOpen } = useContext(IsOpenContext);
   const [activityId, setActivityId] = useState({});
   const [image, setImage] = useState(null);
 
@@ -214,7 +216,11 @@ const DetailActivity = () => {
     <div className="flex">
       <Sidebar />
 
-      <main className="flex flex-col items-center justify-center w-full h-screen pb-5 overflow-auto text-white font-raleway bg-slate-800">
+      <main
+        className={`flex flex-col items-center justify-center w-full ${
+          isOpen ? "ml-[208px]" : "ml-[63px]"
+        }  h-full font-poppins text-slate-100 py-2 ease-linear duration-300 bg-slate-800`}
+      >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
           <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">
             Edit Activity
@@ -222,8 +228,15 @@ const DetailActivity = () => {
 
           <form
             onSubmit={handleEditActivity}
-            className="grid max-w-sm grid-cols-3 gap-5 p-5 mx-auto border min-w-max rounded-xl"
+            className="grid max-w-sm grid-cols-1 gap-5 p-5 mx-auto border md:max-w-lg rounded-xl"
           >
+            {activityId?.imageUrls?.length > 0 && (
+              <img
+                src={activityId.imageUrls[0]}
+                alt={activityId.title}
+                className="object-cover w-full h-32 rounded-md"
+              />
+            )}
             {dataInput.map((input, index) => (
               <div key={index} className="flex flex-col gap-1">
                 <label htmlFor="name">{input.label}</label>

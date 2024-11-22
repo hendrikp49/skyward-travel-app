@@ -32,9 +32,21 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getCookie } from "cookies-next";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { IsOpenContext } from "@/contexts/isOpen";
 
 const Category = () => {
   const { dataCategory, handleDataCategory } = useContext(CategoryContext);
+  const [openModal, setOpenModal] = useState(false);
+  const { isOpen } = useContext(IsOpenContext);
   const [pagination, setPagination] = useState({
     page: 1,
     perPage: 5,
@@ -88,9 +100,29 @@ const Category = () => {
           progress: undefined,
           theme: "dark",
         });
+        setTimeout(() => {
+          setOpenModal;
+        }, 1000);
         handleDataCategory();
       })
-      .catch((err) => console.log(err.response));
+      .catch((err) => {
+        toast.error(
+          "This Category can't be deleted because it has been used in cart",
+          {
+            position: "bottom-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          }
+        );
+        setTimeout(() => {
+          setOpenModal(false);
+        }, 1000);
+      });
   };
 
   useEffect(() => {
@@ -105,7 +137,11 @@ const Category = () => {
     <div className="flex">
       <Sidebar />
 
-      <main className="flex flex-col items-center justify-center w-full h-screen overflow-auto text-white font-raleway bg-slate-800">
+      <main
+        className={`flex flex-col items-center justify-center w-full ${
+          isOpen ? "ml-[208px]" : "ml-[63px]"
+        }  h-screen font-poppins text-slate-100 py-2 ease-linear duration-300 bg-slate-800`}
+      >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
           <h1 className="w-full text-3xl font-bold text-left text-white underline font-playfair-display underline-offset-8">
             Category List
@@ -157,16 +193,37 @@ const Category = () => {
                       </Tooltip>
                     </TooltipProvider>
 
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <span onClick={() => deleteCategory(item.id)}>
-                            <Trash2 color="#f54531" />
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>Delete</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <Dialog>
+                      <DialogTrigger onClick={() => setOpenModal(true)}>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <button>
+                                <Trash2 color="#f54531" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Delete</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </DialogTrigger>
+                      {openModal && (
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>
+                              Are you sure want to delete this promo?
+                            </DialogTitle>
+                          </DialogHeader>
+                          <DialogFooter>
+                            <DialogClose>
+                              <Button variant="outline">Cancel</Button>
+                            </DialogClose>
+                            <Button onClick={() => deleteCategory(item.id)}>
+                              Confirm
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      )}
+                    </Dialog>
                   </TableCell>
                 </TableRow>
               ))}

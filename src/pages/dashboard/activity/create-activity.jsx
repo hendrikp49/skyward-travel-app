@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ActivityContext } from "@/contexts/activityContext";
 import { CategoryContext } from "@/contexts/categoryContext";
+import { IsOpenContext } from "@/contexts/isOpen";
 import { CREATE_ACTIVITY } from "@/pages/api/activity";
 import { BASE_URL, API_KEY } from "@/pages/api/config";
 import { UPLOAD } from "@/pages/api/upload";
@@ -17,6 +18,7 @@ const CreateActivity = () => {
   const router = useRouter();
   const { dataCategory, handleDataCategory } = useContext(CategoryContext);
   const { handleDataActivity } = useContext(ActivityContext);
+  const { isOpen } = useContext(IsOpenContext);
   const [image, setImage] = useState(null);
   const [uploadImage, setUploadImage] = useState(null);
   const [dataActivity, setDataActivity] = useState({
@@ -201,7 +203,11 @@ const CreateActivity = () => {
     <div className="flex">
       <Sidebar />
 
-      <main className="flex flex-col items-center justify-center w-full h-screen pb-5 overflow-auto text-white font-raleway bg-slate-800">
+      <main
+        className={`flex flex-col items-center justify-center w-full ${
+          isOpen ? "ml-[208px]" : "ml-[63px]"
+        }  h-full font-poppins text-slate-100 ease-linear py-2 duration-300 bg-slate-800`}
+      >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
           <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">
             Create Activity
@@ -209,7 +215,7 @@ const CreateActivity = () => {
 
           <form
             onSubmit={handleSubmit}
-            className="grid max-w-sm grid-cols-2 gap-5 p-5 mx-auto border min-w-max rounded-xl"
+            className="grid max-w-sm grid-cols-1 gap-5 p-5 mx-auto border md:max-w-lg rounded-xl"
           >
             {dataInput.map((input, index) => (
               <div key={index} className="flex flex-col gap-1">

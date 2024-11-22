@@ -32,9 +32,21 @@ import {
   Trash2,
 } from "lucide-react";
 import { getCookie } from "cookies-next";
+import {
+  Dialog,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { IsOpenContext } from "@/contexts/isOpen";
 
 const Promo = () => {
   const { dataPromo, handleDataPromo } = useContext(PromoContext);
+  const { isOpen } = useContext(IsOpenContext);
+  const [openModal, setOpenModal] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
     perPage: 5,
@@ -88,6 +100,9 @@ const Promo = () => {
           progress: undefined,
           theme: "dark",
         });
+        setTimeout(() => {
+          setOpenModal(false);
+        }, 1000);
         const updatedPromo = dataPromo.filter((promo) => promo.id !== id);
         handleDataPromo(updatedPromo);
       })
@@ -106,7 +121,11 @@ const Promo = () => {
     <div className="flex">
       <Sidebar />
 
-      <main className="flex flex-col items-center justify-center w-full h-screen overflow-auto text-white font-raleway bg-slate-800">
+      <main
+        className={`flex flex-col items-center justify-center w-full ${
+          isOpen ? "ml-[208px]" : "ml-[63px]"
+        }  h-screen font-poppins text-slate-100 ease-linear duration-300 bg-slate-800`}
+      >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
           <h1 className="w-full text-3xl font-bold text-left text-white underline font-playfair-display underline-offset-8">
             Promo List
@@ -159,23 +178,46 @@ const Promo = () => {
                       <Tooltip>
                         <TooltipTrigger>
                           <Link href={`/dashboard/promo/${item.id}`}>
-                            <FilePen color="orange" />
+                            <button>
+                              <FilePen color="orange" />
+                            </button>
                           </Link>
                         </TooltipTrigger>
                         <TooltipContent>Edit</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
 
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <span onClick={() => deleteData(item.id)}>
-                            <Trash2 color="#f54531" />
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>Delete</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <Dialog>
+                      <DialogTrigger onClick={() => setOpenModal(true)}>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <button>
+                                <Trash2 color="#f54531" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Delete</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </DialogTrigger>
+                      {openModal && (
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>
+                              Are you sure want to delete this promo?
+                            </DialogTitle>
+                          </DialogHeader>
+                          <DialogFooter>
+                            <DialogClose>
+                              <Button variant="outline">Cancel</Button>
+                            </DialogClose>
+                            <Button onClick={() => deleteData(item.id)}>
+                              Confirm
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      )}
+                    </Dialog>
                   </TableCell>
                 </TableRow>
               ))}

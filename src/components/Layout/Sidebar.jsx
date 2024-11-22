@@ -153,7 +153,7 @@ const Sidebar = () => {
 
   return (
     <aside
-      className={`h-screen  inline-block py-5 pl-2 ${
+      className={`h-screen fixed inline-block py-5 pl-2 ${
         isOpen ? "pr-10 w-52" : "pr-2 w-16"
       }  space-y-10 bg-skyward-tertiary ease-linear font-raleway duration-300`}
     >

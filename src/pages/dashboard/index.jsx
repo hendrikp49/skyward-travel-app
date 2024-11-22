@@ -6,10 +6,11 @@ import { ALL_BANNER } from "@/pages/api/banner";
 import { handleDataBannerRedux } from "@/store/bannerSlice";
 import { useContext, useEffect } from "react";
 import { UserContext } from "@/contexts/userContext";
+import { IsOpenContext } from "@/contexts/isOpen";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
-  const { dataBanner } = useSelector((state) => state.banner);
+  const { isOpen } = useContext(IsOpenContext);
   const { user } = useContext(UserContext);
 
   const handleDataBanner = () => {
@@ -35,7 +36,11 @@ const Dashboard = () => {
     <div className="flex">
       <Sidebar />
 
-      <main className="flex flex-col items-center justify-center w-full h-screen font-poppins text-slate-100 bg-slate-800">
+      <main
+        className={`flex flex-col items-center justify-center w-full ${
+          isOpen ? "ml-[208px]" : "ml-[63px]"
+        }  h-screen font-poppins text-slate-100 ease-linear duration-300 bg-slate-800`}
+      >
         <h1 className="text-3xl font-medium text-center font-casser md:text-5xl">
           Welcome Back, {user.name}
         </h1>

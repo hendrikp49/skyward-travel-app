@@ -15,7 +15,6 @@ import { getCookie } from "cookies-next";
 const User = () => {
   const [dataUser, setDataUser] = useState({});
   const [image, setImage] = useState(null);
-  const [dataImage, setDataImage] = useState(null);
 
   const handleUser = () => {
     const config = {
@@ -55,7 +54,10 @@ const User = () => {
     axios
       .post(`${BASE_URL + UPLOAD}`, payload, config)
       .then((res) => {
-        setDataImage(res.data.url);
+        setDataUser({
+          ...dataUser,
+          profilePictureUrl: res.data.url,
+        });
       })
       .catch((err) => console.log(err));
   };
@@ -66,7 +68,7 @@ const User = () => {
     const payload = {
       name: dataUser.name,
       email: dataUser.email,
-      profilePictureUrl: dataImage,
+      profilePictureUrl: dataUser.profilePictureUrl,
       phoneNumber: dataUser.phoneNumber,
     };
     const config = {

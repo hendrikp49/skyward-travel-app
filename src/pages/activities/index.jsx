@@ -218,7 +218,7 @@ const Activity = () => {
 
       <section className="mt-28">
         <div className="mx-auto space-y-5 md:space-y-10 md:max-w-3xl lg:max-w-6xl">
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-3">
             {/* category */}
             {dataCategory.map((item) => (
               <button

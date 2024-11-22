@@ -8,9 +8,11 @@ import Link from "next/link";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { setCookie } from "cookies-next";
+import { Eye, EyeClosed } from "lucide-react";
 
 const Login = () => {
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
   const [dataLogin, setDataLogin] = useState({
     email: "",
     password: "",
@@ -114,13 +116,40 @@ const Login = () => {
                 <label htmlFor="" className="font-medium">
                   {item.label}
                 </label>
-                <input
-                  className="px-3 py-1 text-sm border rounded-md text-slate-800 placeholder:text-sm"
-                  onChange={handleChange}
-                  type={item.type}
-                  name={item.name}
-                  placeholder={item.placeholder}
-                />
+                {item.type === "password" ? (
+                  <div className="relative">
+                    <input
+                      className="w-full py-1 pl-3 pr-10 text-sm border rounded-md text-slate-800 placeholder:text-sm"
+                      onChange={handleChange}
+                      type={isOpen ? "text" : item.type}
+                      name={item.name}
+                      placeholder={item.placeholder}
+                    />
+                    {isOpen ? (
+                      <Eye
+                        onClick={() => setIsOpen(!isOpen)}
+                        size={20}
+                        color="#64748b"
+                        className="absolute cursor-pointer top-1 right-2"
+                      />
+                    ) : (
+                      <EyeClosed
+                        onClick={() => setIsOpen(!isOpen)}
+                        size={20}
+                        color="#64748b"
+                        className="absolute cursor-pointer top-1 right-2"
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <input
+                    className="px-3 py-1 text-sm border rounded-md text-slate-800 placeholder:text-sm"
+                    onChange={handleChange}
+                    type={item.type}
+                    name={item.name}
+                    placeholder={item.placeholder}
+                  />
+                )}
               </div>
             ))}
           </div>

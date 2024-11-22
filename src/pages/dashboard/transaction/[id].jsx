@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { IsOpenContext } from "@/contexts/isOpen";
 import { API_KEY, BASE_URL } from "@/pages/api/config";
 import {
   CANCEL_TRANSACTION,
@@ -20,18 +21,16 @@ import {
 import axios from "axios";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const DetailTransaction = () => {
   const router = useRouter();
   const [dataTransaction, setDataTransaction] = useState({});
   const [dataStatus, setDataStatus] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const { isOpen } = useContext(IsOpenContext);
   const [isClient, setIsClient] = useState(false);
-  // const Dialog = dynamic(() => import("@/components/ui/dialog"), {
-  //   ssr: false,
-  // });
 
   const handleDataTransaction = () => {
     const config = {
@@ -45,7 +44,6 @@ const DetailTransaction = () => {
       .get(`${BASE_URL + TRANSACTION_ID + router.query.id}`, config)
       .then((res) => {
         setDataTransaction(res.data.data);
-        setDataStatus(res.data.data.status);
       })
       .catch((err) => console.log(err.response));
   };
@@ -147,6 +145,9 @@ const DetailTransaction = () => {
           theme: "dark",
         });
         handleDataTransaction();
+        setTimeout(() => {
+          setOpenModal(false);
+        }, 1000);
       })
       .catch((err) => console.log(err));
   };
@@ -187,6 +188,9 @@ const DetailTransaction = () => {
           theme: "dark",
         });
         handleDataTransaction();
+        setTimeout(() => {
+          setOpenModal(false);
+        }, 1000);
       })
       .catch((err) => console.log(err));
   };
@@ -218,13 +222,17 @@ const DetailTransaction = () => {
     <div className="flex">
       <Sidebar />
 
-      <main className="flex flex-col items-center justify-center w-full h-screen pb-5 font-raleway text-slate-800 bg-slate-800">
-        <div className="w-full max-w-sm px-5 mx-auto space-y-10 overflow-auto duration-200 ease-in-out md:max-w-xl lg:max-w-4xl">
+      <main
+        className={`flex flex-col items-center overflow-auto justify-center w-full ${
+          isOpen ? "ml-[208px]" : "ml-[63px]"
+        }  h-screen font-poppins py-2 ease-linear duration-300 bg-slate-800`}
+      >
+        <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out min-w-max md:max-w-2xl lg:max-w-4xl">
           <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">
             Transaction Details
           </h1>
 
-          <div className="grid max-w-sm grid-cols-2 gap-5 p-5 mx-auto border shadow-lg min-w-max shadow-orange-400 bg-slate-100 rounded-xl">
+          <div className="grid max-w-sm grid-cols-2 gap-5 p-5 mx-auto border shadow-md shadow-orange-400 bg-slate-100 rounded-xl">
             {dataInput.map((input, index) => (
               <div
                 key={index}
@@ -254,43 +262,81 @@ const DetailTransaction = () => {
                 )}
               </div>
             ))}
-            <div className="flex justify-between col-span-2 mt-5">
-              <Button variant="destructive" onClick={cancelTransaction}>
-                Cancel Transaction
-              </Button>
+            <div className="flex justify-between col-span-2 gap-2 mt-5">
               <Dialog>
-                <DialogTrigger>
-                  <Button variant="secondary">Edit Status Transaction</Button>
+                <DialogTrigger asChild onClick={() => setOpenModal(true)}>
+                  <Button
+                    disabled={dataTransaction.status !== "pending"}
+                    variant={
+                      dataTransaction.status === "pending"
+                        ? "destructive"
+                        : "disabled"
+                    }
+                  >
+                    Cancel Transaction
+                  </Button>
                 </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Edit Status Transaction</DialogTitle>
-                    <DialogDescription>
-                      Are you sure you want to edit status transaction?
-                    </DialogDescription>
-                  </DialogHeader>
-                  {dataInputStatus.map((input, index) => (
-                    <div key={index} className="space-x-2">
-                      <input
-                        type="radio"
-                        id={input.value}
-                        name="status"
-                        value={input.value}
-                        checked={dataStatus === input.value}
-                        onChange={handleChange}
-                      />
-                      <label htmlFor={input.value}>{input.label}</label>
-                    </div>
-                  ))}
-                  <DialogFooter>
-                    <DialogClose>
-                      <Button variant="outline">Cancel</Button>
-                    </DialogClose>
-                    <Button onClick={handleEditStatusTransaction}>
-                      Confirm
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
+                {openModal && (
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        Are you sure want to cancel transaction?
+                      </DialogTitle>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button variant="outline">Cancel</Button>
+                      </DialogClose>
+                      <Button onClick={cancelTransaction}>Confirm</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                )}
+              </Dialog>
+
+              <Dialog>
+                <DialogTrigger asChild onClick={() => setOpenModal(true)}>
+                  <Button
+                    disabled={dataTransaction.status !== "pending"}
+                    variant={
+                      dataTransaction.status === "pending"
+                        ? "secondary"
+                        : "disabled"
+                    }
+                  >
+                    Edit Status
+                  </Button>
+                </DialogTrigger>
+                {openModal && (
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Edit Status Transaction</DialogTitle>
+                      <DialogDescription>
+                        Are you sure you want to edit status transaction?
+                      </DialogDescription>
+                    </DialogHeader>
+                    {dataInputStatus.map((input, index) => (
+                      <div key={index} className="space-x-2">
+                        <input
+                          type="radio"
+                          id={input.value}
+                          name="status"
+                          value={input.value}
+                          checked={dataStatus === input.value}
+                          onChange={handleChange}
+                        />
+                        <label htmlFor={input.value}>{input.label}</label>
+                      </div>
+                    ))}
+                    <DialogFooter>
+                      <DialogClose>
+                        <Button variant="outline">Cancel</Button>
+                      </DialogClose>
+                      <Button onClick={handleEditStatusTransaction}>
+                        Confirm
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                )}
               </Dialog>
             </div>
           </div>
