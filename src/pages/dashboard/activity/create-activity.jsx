@@ -206,7 +206,7 @@ const CreateActivity = () => {
       <main
         className={`flex flex-col items-center justify-center w-full ${
           isOpen ? "ml-[208px]" : "ml-[63px]"
-        }  h-full font-poppins text-slate-100 ease-linear py-2 duration-300 bg-slate-800`}
+        }  h-full font-poppins text-slate-100 overflow-auto ease-linear py-2 duration-300 bg-slate-800`}
       >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
           <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">

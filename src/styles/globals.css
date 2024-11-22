@@ -20,9 +20,36 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 } */
 
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/fonts/Poppins.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Casser";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/fonts/Casser.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Raleway";
+  font-style: normal;
+  font-weight: 100 900;
+  src: url("/fonts/Raleway.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 100 900;
+  src: url("/fonts/PlayfairDisplay.ttf") format("truetype");
+}
+
 @layer base {
   :root {
-
     --background: 0 0% 100%;
 
     --foreground: 222.2 84% 4.9%;
@@ -71,10 +98,9 @@ body {
 
     --chart-5: 27 87% 67%;
 
-    --radius: 0.5rem
+    --radius: 0.5rem;
   }
   .dark {
-
     --background: 222.2 84% 4.9%;
 
     --foreground: 210 40% 98%;
@@ -121,7 +147,7 @@ body {
 
     --chart-4: 280 65% 60%;
 
-    --chart-5: 340 75% 55%
+    --chart-5: 340 75% 55%;
   }
 }
 

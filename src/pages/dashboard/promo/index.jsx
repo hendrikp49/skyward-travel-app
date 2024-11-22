@@ -124,7 +124,7 @@ const Promo = () => {
       <main
         className={`flex flex-col items-center justify-center w-full ${
           isOpen ? "ml-[208px]" : "ml-[63px]"
-        }  h-screen font-poppins text-slate-100 ease-linear duration-300 bg-slate-800`}
+        }  h-screen font-poppins text-slate-100 overflow-auto ease-linear duration-300 bg-slate-800`}
       >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
           <h1 className="w-full text-3xl font-bold text-left text-white underline font-playfair-display underline-offset-8">

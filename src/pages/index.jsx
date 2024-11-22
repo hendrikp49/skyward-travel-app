@@ -143,7 +143,7 @@ const Home = () => {
     <div>
       <NavbarUser />
 
-      <div className="relative flex items-center overflow-hidden h-[calc(100vh-110px)]  mx-auto mt-5 rounded-xl md:max-w-3xl lg:max-w-6xl">
+      <div className="relative flex items-center overflow-hidden h-[calc(100vh-110px)] mx-auto mt-5 rounded-xl md:max-w-3xl lg:max-w-6xl">
         <div className="absolute w-full h-full overflow-hidden -z-20">
           <img
             src="images/hero.webp"
@@ -151,7 +151,7 @@ const Home = () => {
             className="object-cover w-full h-full"
           />
         </div>
-        <div className="absolute h-full lg:w-1/2 -z-10 bg-gradient-to-r from-black/50 to-transparent"></div>
+        <div className="absolute w-1/2 h-full -z-10 bg-gradient-to-r from-black/50 to-transparent"></div>
 
         <div className="flex flex-col w-full gap-3 ml-2 md:gap-4 md:ml-5 lg:ml-10">
           <h1 className="w-full max-w-md text-4xl font-bold text-white lg:max-w-xl lg:text-5xl drop-shadow-md font-casser">

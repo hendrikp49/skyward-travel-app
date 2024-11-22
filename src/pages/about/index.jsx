@@ -36,7 +36,7 @@ const About = () => {
   }, []);
 
   return (
-    <div className="font- font-raleway">
+    <div className="font-raleway">
       <NavbarUser />
 
       <section className="mt-10">
