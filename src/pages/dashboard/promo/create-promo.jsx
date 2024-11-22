@@ -174,7 +174,7 @@ const CreatePromo = () => {
                 {input.type === "file" ? (
                   <Input
                     onChange={handleChangeImage}
-                    className="px-2 py-1 rounded-lg text-slate-950 bg-slate-100"
+                    className="px-2 py-1 rounded-lg text-slate-950 bg-white"
                     type={input.type}
                     name={input.name}
                     placeholder={input.placeholder}

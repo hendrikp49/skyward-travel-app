@@ -134,7 +134,7 @@ const CreateBanner = () => {
                 {input.type === "file" ? (
                   <Input
                     onChange={handleChangeImage}
-                    className="px-2 py-1 rounded-lg"
+                    className="px-2 py-1 bg-white rounded-lg text-slate-950"
                     type={input.type}
                     name={input.name}
                     placeholder={input.placeholder}

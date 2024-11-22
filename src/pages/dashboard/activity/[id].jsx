@@ -213,7 +213,7 @@ const DetailActivity = () => {
   }, [image]);
 
   return (
-    <div className="flex bg-slate-800 md:h-screen lg:h-auto">
+    <div className="flex bg-slate-800">
       <Sidebar />
 
       <main

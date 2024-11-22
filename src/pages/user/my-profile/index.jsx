@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { LOGGED_USER, UPDATE_USER } from "../../api/user";
 import { API_KEY, BASE_URL } from "../../api/config";
 import Image from "next/image";
@@ -11,12 +11,14 @@ import { UPLOAD } from "@/pages/api/upload";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getCookie } from "cookies-next";
+import { UserContext } from "@/contexts/userContext";
 
 const User = () => {
   const [dataUser, setDataUser] = useState({});
+  const { handleUser } = useContext(UserContext);
   const [image, setImage] = useState(null);
 
-  const handleUser = () => {
+  const handleDataUser = () => {
     const config = {
       headers: {
         Authorization: `Bearer ${getCookie("token")}`,
@@ -91,6 +93,7 @@ const User = () => {
           progress: undefined,
           theme: "colored",
         });
+        handleDataUser();
         handleUser();
       })
       .catch((err) => console.log(err));
@@ -132,7 +135,7 @@ const User = () => {
   ];
 
   useEffect(() => {
-    handleUser();
+    handleDataUser();
   }, []);
 
   useEffect(() => {
