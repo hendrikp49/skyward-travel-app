@@ -119,7 +119,7 @@ const DetailActivity = () => {
   }, [router.query.id]);
 
   return (
-    <div className="border-2 border-red-500 font-raleway">
+    <div className=" font-raleway">
       <NavbarUser />
 
       <div className="mt-10">
