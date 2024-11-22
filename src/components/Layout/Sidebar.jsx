@@ -200,7 +200,7 @@ const Sidebar = () => {
             <DropdownMenuTrigger>
               <div className="flex items-center justify-center gap-3">
                 <Avatar>
-                  <AvatarImage src={getCookie("image")} />
+                  <AvatarImage src={user.profilePictureUrl} />
                   <AvatarFallback>
                     <User />
                   </AvatarFallback>
