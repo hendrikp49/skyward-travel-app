@@ -11,6 +11,7 @@ import { Provider } from "react-redux";
 import CartContextProvider from "@/contexts/cartContext";
 import UserContextProvider from "@/contexts/userContext";
 import IsOpenContextProvider from "@/contexts/isOpen";
+import Head from "next/head";
 
 export default function App({ Component, pageProps }) {
   return (
@@ -24,6 +25,13 @@ export default function App({ Component, pageProps }) {
                   <PromoContextProvider>
                     <BannerContextProvider>
                       <AllUserContextProvider>
+                        <Head>
+                          <title>Skyward</title>
+                          <meta
+                            name="description"
+                            content="Skyward - Your Best Travel Partner"
+                          />
+                        </Head>
                         <Component {...pageProps} />
                         <ToastContainer />
                       </AllUserContextProvider>
