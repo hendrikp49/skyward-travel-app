@@ -79,18 +79,20 @@ const NavbarUser = () => {
       progress: undefined,
       theme: "colored",
     });
-    setTimeout(() => {
-      router.push("/");
-    }, 2000);
+    router.push("/");
   };
 
   useEffect(() => {
     setMounted(true);
-    handleUser();
+    if (token) {
+      handleUser();
+    }
   }, []);
 
   useEffect(() => {
-    handleDataCart();
+    if (token) {
+      handleDataCart();
+    }
   }, [dataCart.length]);
 
   return (
@@ -105,15 +107,16 @@ const NavbarUser = () => {
         </div>
         <ul className="hidden gap-5 lg:gap-8 md:flex">
           {navItem.map((item, index) => (
-            <Link key={index} href={item.href}>
-              <li
+            <li key={index}>
+              <Link
+                href={item.href}
                 className={`hover:text-skyward-primary ${
                   pathname === item.href && "text-skyward-primary"
                 }`}
               >
                 {item.name}
-              </li>
-            </Link>
+              </Link>
+            </li>
           ))}
         </ul>
         {!mounted ? null : (
@@ -125,7 +128,7 @@ const NavbarUser = () => {
                     <Link href={"/user/cart"} className="relative">
                       <ShoppingCart />
                       <div className="absolute flex items-center justify-center w-5 text-xs text-white rounded-full -top-4 -right-3 bg-skyward-primary aspect-square">
-                        {dataCart.length}
+                        {dataCart.reduce((acc, item) => acc + item.quantity, 0)}
                       </div>
                     </Link>
                     <TooltipContent>My Cart</TooltipContent>
@@ -137,7 +140,7 @@ const NavbarUser = () => {
               {token && (
                 <DropdownMenuTrigger className="flex items-center gap-2">
                   <Avatar>
-                    <AvatarImage src={user.profilePictureUrl} />
+                    <AvatarImage src={user.profilePictureUrl} alt={user.name} />
 
                     <AvatarFallback>
                       <User />

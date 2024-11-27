@@ -23,36 +23,39 @@ const Footer = () => {
 
   const navContact = [
     {
-      icon: <MapPin color="#043DEF" />,
+      icon: <MapPin color="#04b3ef" />,
       desc: "Jl. Merdeka No.123, Kec. Setiabudi Jakarta Selatan, DKI Jakarta, Indonesia.",
     },
     {
-      icon: <Phone color="#043DEF" />,
+      icon: <Phone color="#04b3ef" />,
       desc: "+62 21 555 6789",
     },
     {
-      icon: <Mail color="#043DEF" />,
+      icon: <Mail color="#04b3ef" />,
       desc: "info@skyward.com",
     },
   ];
 
   const socmed = [
     {
-      icon: <Github color="#043DEF" />,
+      name: "Github",
+      icon: <Github color="#04b3ef" />,
       link: "https://www.github.com/hendrikp49",
     },
     {
-      icon: <Instagram color="#043DEF" />,
+      name: "Instagram",
+      icon: <Instagram color="#04b3ef" />,
       link: "https://www.instagram.com/hendrik_prakoso",
     },
     {
-      icon: <Linkedin color="#043DEF" />,
+      name: "Linkedin",
+      icon: <Linkedin color="#04b3ef" />,
       link: "https://www.linkedin.com/in/hendrikprakoso",
     },
   ];
 
   return (
-    <footer className="p-5 mx-auto mb-2 mt-28 font-raleway md:max-w-3xl lg:max-w-6xl bg-skyward-secondary/70 rounded-xl">
+    <footer className="p-5 text-white mt-28 font-raleway bg-slate-700">
       <div className="flex flex-col gap-5 md:gap-10 md:flex-row md:justify-between">
         <div className="flex flex-col gap-3 lg:gap-7">
           <h3 className="text-2xl font-casser">
@@ -64,24 +67,20 @@ const Footer = () => {
         </div>
 
         <div className="flex flex-col gap-3 lg:gap-7">
-          <h5 className="font-medium">Navigation</h5>
+          <h4 className="font-medium">Navigation</h4>
           <ul className="flex flex-col gap-3 lg:gap-7">
             {navItem.map((item, index) => (
-              <Link
-                key={index}
-                href={item.href}
-                className="w-fit hover:text-skyward-primary"
-              >
-                <li className="text-sm">
+              <li key={index} className="w-fit hover:text-skyward-primary">
+                <Link href={item.href} className="text-sm">
                   <p>{item.name}</p>
-                </li>
-              </Link>
+                </Link>
+              </li>
             ))}
           </ul>
         </div>
 
         <div className="flex flex-col gap-3 lg:gap-7">
-          <h5 className="font-medium">Contact</h5>
+          <h4 className="font-medium">Contact</h4>
           {navContact.map((item, index) => (
             <div key={index} className="flex gap-3 lg:gap-7">
               {item.icon}
@@ -99,9 +98,14 @@ const Footer = () => {
         </p>
         <div className="flex gap-3 md:gap-7">
           {socmed.map((item, index) => (
-            <Link key={index} href={item.link} target="_blank">
+            <a
+              key={index}
+              href={item.link}
+              aria-label={item.name}
+              target="_blank"
+            >
               {item.icon}
-            </Link>
+            </a>
           ))}
         </div>
       </div>

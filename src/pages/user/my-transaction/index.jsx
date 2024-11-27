@@ -168,6 +168,14 @@ const MyTransaction = () => {
             })
             .map((data) => (
               <div className="p-5 space-y-5 overflow-auto bg-white rounded-lg shadow-sm shadow-slate-600">
+                <div className="flex justify-between mb-16 font-poppins">
+                  <span className="px-3 py-1 text-sm border rounded-sm shadow-sm shadow-slate-400">
+                    ID Transaction : {data.id}
+                  </span>
+                  <span className="px-3 py-1 text-sm border rounded-sm shadow-sm shadow-slate-400">
+                    Inv. No : {data.invoiceId}
+                  </span>
+                </div>
                 <table key={data.id} className="w-full">
                   <thead className="border-b rounded-lg border-slate-700">
                     <tr className="py-5">
@@ -253,7 +261,6 @@ const MyTransaction = () => {
                     <Dialog>
                       <DialogTrigger onClick={() => setIsOpen(true)}>
                         <Button
-                          className="disabled:cursor-not-allowed"
                           disabled={data.status !== "pending"}
                           variant={
                             data.status !== "pending"

@@ -10,13 +10,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
   FilePen,
+  User,
 } from "lucide-react";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import {
@@ -25,27 +26,85 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { IsOpenContext } from "@/contexts/isOpen";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const AllUser = () => {
   const { isOpen } = useContext(IsOpenContext);
   const { allUsers, handleDataUser } = useContext(AllUserContext);
+  const [statusFilter, setStatusFilter] = useState("");
+  const [searchName, setSearchName] = useState("");
   const [pagination, setPagination] = useState({
     page: 1,
     perPage: 5,
     totalPage: 0,
   });
 
-  const allPage = () => {
-    setPagination({
-      ...pagination,
-      totalPage: Math.ceil(allUsers.length / pagination.perPage),
-    });
+  const filteredUsers = allUsers
+    .filter((user) => {
+      const filterRole = statusFilter ? user.role === statusFilter : true;
+      const findName = user.name
+        .toLowerCase()
+        .includes(searchName.toLowerCase());
+      return filterRole && findName;
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  const calculateTotalPages = () => {
+    setPagination((prev) => ({
+      ...prev,
+      totalPage: Math.ceil(filteredUsers.length / prev.perPage),
+    }));
   };
 
-  const indexFirstUser =
-    pagination.page * pagination.perPage - pagination.perPage;
-  const indexLastUser = pagination.page * pagination.perPage;
-  const dataPage = allUsers.slice(indexFirstUser, indexLastUser);
+  const handleChangeRole = (selectedStatus) => {
+    setStatusFilter(selectedStatus === "all" ? "" : selectedStatus);
+
+    // Reset halaman ke 1 ketika filter berubah
+    setPagination((prev) => ({
+      ...prev,
+      page: 1,
+    }));
+  };
+
+  const handleChangeName = (searchName) => {
+    setSearchName(searchName);
+
+    // Reset halaman ke 1 ketika filter berubah
+    setPagination((prev) => ({
+      ...prev,
+      page: 1,
+    }));
+  };
+
+  const handleChangePerPage = (page) => {
+    setPagination((prev) => ({
+      ...prev,
+      perPage: page,
+    }));
+  };
+
+  const handleChangePage = (e) => {
+    setPagination((prev) => ({
+      ...prev,
+      page:
+        !e.target.value || e.target.value === 0 || isNaN(e.target.value)
+          ? 1
+          : parseInt(e.target.value),
+    }));
+  };
+
+  const firstIndexData = (pagination.page - 1) * pagination.perPage;
+  const lastIndexData = pagination.page * pagination.perPage;
+  const dataPage = filteredUsers.slice(firstIndexData, lastIndexData);
 
   const handleNext = () => {
     setPagination({
@@ -63,11 +122,11 @@ const AllUser = () => {
 
   useEffect(() => {
     handleDataUser();
-  }, [pagination.totalPage]);
+  }, []);
 
   useEffect(() => {
-    allPage();
-  }, [allUsers]);
+    calculateTotalPages();
+  }, [statusFilter, searchName, pagination.perPage, pagination.page, allUsers]);
 
   return (
     <div className="flex">
@@ -76,12 +135,35 @@ const AllUser = () => {
       <main
         className={`flex flex-col items-center self-end justify-center w-full ${
           isOpen ? "ml-[208px]" : "ml-[63px]"
-        }  h-screen font-poppins text-slate-100 overflow-auto ease-linear duration-300 bg-slate-800`}
+        }  h-full min-h-screen py-10 font-poppins text-slate-100 overflow-auto ease-linear duration-300 bg-slate-800`}
       >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
           <h1 className="w-full text-3xl font-bold text-left text-white underline font-playfair-display underline-offset-8">
             All User
           </h1>
+
+          <div className="flex justify-between">
+            <Input
+              type="text"
+              placeholder="Search by name"
+              className="w-56 placeholder:text-slate-400"
+              onChange={(e) => handleChangeName(e.target.value)}
+            />
+            <Select value={statusFilter} onValueChange={handleChangeRole}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Select Role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Role</SelectLabel>
+                  <SelectItem value="all">All Role</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="user">User</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
           <Table>
             <TableHeader className="bg-skyward-tertiary">
               <TableRow className="text-left">
@@ -104,7 +186,14 @@ const AllUser = () => {
                 >
                   <TableCell>
                     <Avatar>
-                      <AvatarImage src={user.profilePictureUrl} />
+                      <AvatarImage
+                        src={user.profilePictureUrl}
+                        alt={user.name}
+                      />
+
+                      <AvatarFallback>
+                        <User />
+                      </AvatarFallback>
                     </Avatar>
                   </TableCell>
                   <TableCell>{user.name}</TableCell>
@@ -120,7 +209,7 @@ const AllUser = () => {
                             <FilePen color="orange" />
                           </Link>
                         </TooltipTrigger>
-                        <TooltipContent>Edit</TooltipContent>
+                        <TooltipContent>Edit Role</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </TableCell>
@@ -129,37 +218,65 @@ const AllUser = () => {
             </TableBody>
           </Table>
 
-          <div className="flex gap-3">
-            <div className="flex">
-              <ChevronsLeft
-                onClick={() => setPagination({ ...pagination, page: 1 })}
-                className="cursor-pointer"
-              />
-              <button
-                disabled={pagination.page === 1}
-                className="disabled:cursor-not-allowed"
-                onClick={handleBack}
-              >
-                <ChevronLeft />
-              </button>
+          <div className="flex justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex">
+                <ChevronsLeft
+                  onClick={() => setPagination({ ...pagination, page: 1 })}
+                  className="cursor-pointer"
+                />
+                <button
+                  disabled={pagination.page === 1}
+                  className="disabled:cursor-not-allowed"
+                  onClick={handleBack}
+                >
+                  <ChevronLeft />
+                </button>
+              </div>
+              <div className="space-x-1">
+                <input
+                  type="text"
+                  value={pagination.page}
+                  onChange={handleChangePage}
+                  className="w-5 text-center bg-transparent outline-none"
+                />
+                <span>of {pagination.totalPage}</span>
+              </div>
+              <div className="flex">
+                <button
+                  disabled={pagination.page === pagination.totalPage}
+                  className="disabled:cursor-not-allowed"
+                  onClick={handleNext}
+                >
+                  <ChevronRight />
+                </button>
+                <ChevronsRight
+                  className="cursor-pointer"
+                  onClick={() =>
+                    setPagination({ ...pagination, page: pagination.totalPage })
+                  }
+                />
+              </div>
             </div>
-            <span>
-              {pagination.page} of {pagination.totalPage}
-            </span>
-            <div className="flex">
-              <button
-                disabled={pagination.page === pagination.totalPage}
-                className="disabled:cursor-not-allowed"
-                onClick={handleNext}
+
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-light">Data per Page</span>
+              <Select
+                value={pagination.perPage}
+                onValueChange={handleChangePerPage}
               >
-                <ChevronRight />
-              </button>
-              <ChevronsRight
-                className="cursor-pointer"
-                onClick={() =>
-                  setPagination({ ...pagination, page: pagination.totalPage })
-                }
-              />
+                <SelectTrigger className="w-16">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value={5}>5</SelectItem>
+                    <SelectItem value={10}>10</SelectItem>
+                    <SelectItem value={15}>15</SelectItem>
+                    <SelectItem value={20}>20</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>

@@ -54,11 +54,8 @@ const UpdateRole = () => {
           progress: undefined,
           theme: "dark",
         });
-
-        setTimeout(() => {
-          handleDataUser();
-          router.push("/dashboard/all-user");
-        }, 2000);
+        handleDataUser();
+        router.push("/dashboard/all-user");
       })
       .catch((err) => console.log(err));
   };
@@ -79,7 +76,7 @@ const UpdateRole = () => {
       >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
           <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">
-            Edit User
+            Edit Role User
           </h1>
 
           <form
@@ -153,17 +150,6 @@ const UpdateRole = () => {
                 type="number"
                 name="phoneNumber"
                 value={roleUser?.phoneNumber}
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label htmlFor="profilePictureUrl">Profile Picture</label>
-              <input
-                disabled
-                onChange={handleChange}
-                className="px-2 py-1 rounded-lg cursor-not-allowed disabled:text-slate-400 disabled:bg-slate-200 text-slate-950"
-                type="text"
-                name="profilePictureUrl"
-                value={roleUser?.profilePictureUrl}
               />
             </div>
             <div className="flex justify-end">

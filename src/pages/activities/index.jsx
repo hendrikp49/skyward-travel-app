@@ -10,6 +10,8 @@ import {
   MapPin,
   MoveRight,
   ShoppingCart,
+  Star,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Layout/Footer";
@@ -89,19 +91,6 @@ const Activity = () => {
   const lastIndex = pagination.page * pagination.perPage;
   const currentData = categoryId.slice(firstIndex, lastIndex);
 
-  const rating = (banyaknyaRating) => {
-    let stars = "";
-
-    for (let i = 1; i < banyaknyaRating; i++) {
-      if (i <= 5) {
-        stars += "⭐";
-      } else {
-        break;
-      }
-    }
-    return stars;
-  };
-
   const nextPage = () => {
     setPagination({
       ...pagination,
@@ -169,7 +158,7 @@ const Activity = () => {
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
-          theme: "dark",
+          theme: "colored",
         });
         handleDataCart();
       })
@@ -195,8 +184,8 @@ const Activity = () => {
         <div className="relative px-5 py-10 mx-auto overflow-hidden rounded-xl md:max-w-3xl lg:max-w-6xl">
           <div className="absolute top-0 left-0 w-full h-full -z-20">
             <img
-              src="images/df2.jpg"
-              alt=""
+              src="images/df2.webp"
+              alt="Image for Header"
               className="object-cover w-full h-full"
             />
             <div className="absolute top-0 left-0 w-full h-full bg-black/50"></div>
@@ -240,7 +229,7 @@ const Activity = () => {
             {currentData.map((activity) => (
               <div
                 key={activity.id}
-                className="pb-5 space-y-3 overflow-hidden duration-200 ease-in-out transform border shadow-md hover:shadow-none hover:translate-y-1 w-72 h-[450px] rounded-xl"
+                className="pb-5 space-y-3 overflow-hidden duration-200 ease-in-out transform border shadow-md hover:shadow-none hover:translate-y-1 w-72 h-[480px] rounded-xl"
               >
                 <img
                   src={activity.imageUrls[0]}
@@ -258,9 +247,25 @@ const Activity = () => {
                     </div>
                     <p>{activity.title}</p>
 
-                    <div className="flex items-center gap-3">
-                      <p>{rating(activity.rating)}</p>
-                      <span className="text-sm font-light">{`(${activity.total_reviews} reviews)`}</span>
+                    <div className="flex flex-col gap-3">
+                      <div className="flex gap-2">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star
+                            key={i}
+                            size={16}
+                            fill={i < activity.rating ? "currentColor" : "none"}
+                            className={`${
+                              i < activity.rating
+                                ? "text-skyward-tertiary"
+                                : "text-gray-200"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="flex items-center gap-2 text-sm font-light">
+                        <User size={16} />
+                        {`${activity.total_reviews} reviews`}
+                      </span>
                     </div>
                   </div>
 

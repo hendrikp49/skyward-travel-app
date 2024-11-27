@@ -1,8 +1,7 @@
-import { CARTS, DELETE_CART, UPDATE_CART } from "@/pages/api/cart";
+import { DELETE_CART, UPDATE_CART } from "@/pages/api/cart";
 import { API_KEY, BASE_URL } from "@/pages/api/config";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
-import Link from "next/link";
 import { CartContext } from "@/contexts/cartContext";
 import { Button } from "@/components/ui/button";
 import NavbarUser from "@/components/Layout/Navbar";
@@ -117,9 +116,7 @@ const Cart = () => {
           progress: undefined,
           theme: "colored",
         });
-        setTimeout(() => {
-          router.push("/user/my-transaction");
-        }, 2000);
+        router.push("/user/my-transaction");
       })
       .catch((err) => {
         console.log(err);

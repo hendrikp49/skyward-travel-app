@@ -141,9 +141,7 @@ const Sidebar = () => {
       progress: undefined,
       theme: "colored",
     });
-    setTimeout(() => {
-      router.push("/");
-    }, 2000);
+    router.push("/");
   };
 
   useEffect(() => {

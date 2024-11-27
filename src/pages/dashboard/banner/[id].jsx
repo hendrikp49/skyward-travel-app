@@ -148,6 +148,7 @@ const DetailBanner = () => {
                     onChange={handleChangeImage}
                     className="px-2 py-1 bg-white rounded-lg text-slate-950"
                     type={input.type}
+                    accept="image/*"
                     name={input.name}
                     placeholder={input.placeholder}
                   />

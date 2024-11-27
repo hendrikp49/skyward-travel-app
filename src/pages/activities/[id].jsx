@@ -2,20 +2,22 @@ import { ACTIVITY_ID } from "@/pages/api/activity";
 import { API_KEY, BASE_URL } from "@/pages/api/config";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ADD_TO_CART } from "../api/cart";
 import NavbarUser from "@/components/Layout/Navbar";
 import Footer from "@/components/Layout/Footer";
-import { MapPin, ShoppingCart } from "lucide-react";
+import { MapPin, ShoppingCart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getCookie } from "cookies-next";
+import { CartContext } from "@/contexts/cartContext";
 
 const DetailActivity = () => {
   const token = getCookie("token");
   const role = getCookie("role");
   const router = useRouter();
+  const { handleDataCart } = useContext(CartContext);
   const [dataActivity, setDataActivity] = useState({});
   const description = [
     { name: "Description", ket: dataActivity.description },
@@ -92,24 +94,11 @@ const DetailActivity = () => {
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
-          theme: "dark",
+          theme: "colored",
         });
+        handleDataCart();
       })
       .catch((err) => console.log(err));
-  };
-
-  const rating = (banyaknyaRating) => {
-    let stars = "";
-
-    for (let i = 1; i <= banyaknyaRating; i++) {
-      if (i <= 5) {
-        stars += "⭐";
-      } else {
-        break;
-      }
-    }
-
-    return stars;
   };
 
   useEffect(() => {
@@ -135,7 +124,19 @@ const DetailActivity = () => {
               {dataActivity.title}, {dataActivity.category?.name}
             </h2>
             <div className="flex gap-2">
-              <span>{rating(dataActivity.rating)}</span>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star
+                  key={i}
+                  size={20}
+                  fill={i < dataActivity.rating ? "currentColor" : "none"}
+                  className={
+                    i < dataActivity.rating
+                      ? "text-skyward-tertiary"
+                      : "text-gray-200"
+                  }
+                />
+              ))}
+              {/* <span>{rating(dataActivity.rating)}</span> */}
               <span>({dataActivity.total_reviews} reviews)</span>
             </div>
             {dataActivity.imageUrls && (

@@ -68,9 +68,7 @@ const Register = () => {
           progress: undefined,
           theme: "colored",
         });
-        setTimeout(() => {
-          router.push("/auth/login");
-        }, 2000);
+        router.push("/auth/login");
       })
       .catch((err) => {
         toast.error(err.response.data.message, {
@@ -263,39 +261,6 @@ const Register = () => {
         </form>
       </div>
     </div>
-    // <div>
-    //   <div>
-    //     <form onSubmit={handleSubmit}>
-    //       <label htmlFor="">Name</label>
-    //       <input onChange={handleChange} type="text" name="name" />
-    //       <label htmlFor="">Email</label>
-    //       <input onChange={handleChange} type="email" name="email" />
-    //       <label htmlFor="">Password</label>
-    //       <input onChange={handleChange} type="text" name="password" />
-    //       <label htmlFor="">Confirm Password</label>
-    //       <input onChange={handleChange} type="text" name="passwordRepeat" />
-    //       <input
-    //         onChange={handleChange}
-    //         type="radio"
-    //         id="user"
-    //         name="role"
-    //         value="user"
-    //       />
-    //       <label htmlFor="user">User</label>
-    //       <input
-    //         onChange={handleChange}
-    //         type="radio"
-    //         id="admin"
-    //         name="role"
-    //         value="admin"
-    //       />
-    //       <label htmlFor="admin">Admin</label>
-    //       <label htmlFor="">Phone Number</label>
-    //       <input onChange={handleChange} type="text" name="phoneNumber" />
-    //       <button type="submit">Register</button>
-    //     </form>
-    //   </div>
-    // </div>
   );
 };
 

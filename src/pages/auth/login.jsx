@@ -54,13 +54,11 @@ const Login = () => {
         setCookie("token", res.data.token);
         setCookie("role", res.data.data.role);
         setCookie("idUser", res.data.data.id);
-        setTimeout(() => {
-          if (res.data.data.role === "admin") {
-            router.push("/dashboard");
-          } else {
-            router.push("/");
-          }
-        }, 2000);
+        if (res.data.data.role === "admin") {
+          router.push("/dashboard");
+        } else {
+          router.push("/");
+        }
       })
       .catch((err) => {
         toast.error(err.response.data.message, {

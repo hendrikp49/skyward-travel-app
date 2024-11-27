@@ -2,7 +2,6 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { LOGGED_USER, UPDATE_USER } from "../../api/user";
 import { API_KEY, BASE_URL } from "../../api/config";
-import Image from "next/image";
 import NavbarUser from "@/components/Layout/Navbar";
 import Footer from "@/components/Layout/Footer";
 import { Input } from "@/components/ui/input";
@@ -161,6 +160,7 @@ const User = () => {
             />
             <Input
               type="file"
+              accept="image/*"
               onChange={handleChangeImage}
               className="cursor-pointer"
             />

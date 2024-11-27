@@ -37,8 +37,8 @@ const Offers = () => {
         <div className="relative px-5 py-10 mx-auto overflow-hidden rounded-xl md:max-w-3xl lg:max-w-6xl">
           <div className="absolute top-0 left-0 w-full h-full -z-20">
             <img
-              src="images/df2.jpg"
-              alt=""
+              src="images/df2.webp"
+              alt="Image for Header"
               className="object-cover w-full h-full"
             />
             <div className="absolute top-0 left-0 w-full h-full bg-black/50"></div>

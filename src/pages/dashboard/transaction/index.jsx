@@ -1,5 +1,13 @@
 import Sidebar from "@/components/Layout/Sidebar";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -17,6 +25,7 @@ import {
 import { IsOpenContext } from "@/contexts/isOpen";
 import { TransactionContext } from "@/contexts/transactionContext";
 import {
+  BookText,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -31,15 +40,22 @@ const AllTransaction = () => {
   const { allTransaction, handleAllTransaction } =
     useContext(TransactionContext);
   const [statusFilter, setStatusFilter] = useState("");
-
-  const filteredTransactions = allTransaction.filter((transaction) =>
-    statusFilter ? transaction.status === statusFilter : true
-  );
-
+  const [searchInvoice, setSearchInvoice] = useState("");
   const [pagination, setPagination] = useState({
     page: 1,
-    perPage: 7,
+    perPage: 5,
     totalPage: 0,
+  });
+
+  const filteredTransactions = allTransaction.filter((transaction) => {
+    const filterStatus = statusFilter
+      ? transaction.status === statusFilter
+      : true;
+    const findInvoice = transaction.invoiceId
+      .toLowerCase()
+      .includes(searchInvoice.toLowerCase());
+
+    return filterStatus && findInvoice;
   });
 
   const calculateTotalPages = () => {
@@ -53,14 +69,40 @@ const AllTransaction = () => {
   const lastIndexData = pagination.page * pagination.perPage;
   const dataPage = filteredTransactions.slice(firstIndexData, lastIndexData);
 
-  const handleStatusFilterChange = (e) => {
-    const selectedStatus = e.target.value;
-    setStatusFilter(selectedStatus);
+  const handleStatusFilterChange = (value) => {
+    setStatusFilter(value === "all" ? "" : value);
 
     // Reset halaman ke 1 ketika filter berubah
     setPagination((prev) => ({
       ...prev,
       page: 1,
+    }));
+  };
+
+  const handleSearchInvoice = (value) => {
+    setSearchInvoice(value);
+
+    // Reset halaman ke 1 ketika pencarian berubah
+    setPagination((prev) => ({
+      ...prev,
+      page: 1,
+    }));
+  };
+
+  const handleChangePerPage = (page) => {
+    setPagination((prev) => ({
+      ...prev,
+      perPage: page,
+    }));
+  };
+
+  const handleChangePage = (e) => {
+    setPagination((prev) => ({
+      ...prev,
+      page:
+        !e.target.value || e.target.value === 0 || isNaN(e.target.value)
+          ? 1
+          : parseInt(e.target.value),
     }));
   };
 
@@ -80,7 +122,7 @@ const AllTransaction = () => {
 
   useEffect(() => {
     calculateTotalPages();
-  }, [statusFilter]);
+  }, [statusFilter, searchInvoice, pagination.perPage, allTransaction]);
 
   useEffect(() => {
     handleAllTransaction();
@@ -93,26 +135,35 @@ const AllTransaction = () => {
       <main
         className={`flex flex-col items-center justify-center w-full ${
           isOpen ? "ml-[208px]" : "ml-[63px]"
-        }  h-screen font-poppins text-slate-100 overflow-auto py-2 ease-linear duration-300 bg-slate-800`}
+        }  h-full min-h-screen font-poppins text-slate-100 overflow-auto py-10 ease-linear duration-300 bg-slate-800`}
       >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
           <h1 className="w-full text-3xl font-bold text-left text-white underline font-playfair-display underline-offset-8">
             Transaction List
           </h1>
 
-          <div className="text-right">
-            <select
+          <div className="flex justify-between text-right">
+            <Input
+              type="text"
+              placeholder="Search by Inv. Number"
+              className="w-56 placeholder:text-slate-400"
+              onChange={(e) => handleSearchInvoice(e.target.value)}
+            />
+            <Select
               value={statusFilter}
-              onChange={handleStatusFilterChange}
-              className="p-2 text-sm rounded-md text-slate-800 bg-slate-100"
+              onValueChange={handleStatusFilterChange}
             >
-              <option disabled>Filter by Status</option>
-              <option value="">All</option>
-              <option value="success">Success</option>
-              <option value="failed">Failed</option>
-              <option value="pending">Pending</option>
-              <option value="cancelled">Canceled</option>
-            </select>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="success">Success</SelectItem>
+                <SelectItem value="failed">Failed</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="cancelled">Canceled</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <Table>
@@ -147,10 +198,10 @@ const AllTransaction = () => {
                       <Tooltip>
                         <TooltipTrigger>
                           <Link href={`/dashboard/transaction/${user.id}`}>
-                            <FilePen color="orange" />
+                            <BookText color="orange" />
                           </Link>
                         </TooltipTrigger>
-                        <TooltipContent>Edit</TooltipContent>
+                        <TooltipContent>Detail Transaction</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </TableCell>
@@ -159,37 +210,63 @@ const AllTransaction = () => {
             </TableBody>
           </Table>
 
-          <div className="flex gap-3">
-            <div className="flex">
-              <ChevronsLeft
-                onClick={() => setPagination({ ...pagination, page: 1 })}
-                className="cursor-pointer"
-              />
-              <button
-                disabled={pagination.page === 1}
-                className="disabled:cursor-not-allowed"
-                onClick={handleBack}
-              >
-                <ChevronLeft />
-              </button>
+          <div className="flex justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex">
+                <ChevronsLeft
+                  onClick={() => setPagination({ ...pagination, page: 1 })}
+                  className="cursor-pointer"
+                />
+                <button
+                  disabled={pagination.page === 1}
+                  className="disabled:cursor-not-allowed"
+                  onClick={handleBack}
+                >
+                  <ChevronLeft />
+                </button>
+              </div>
+              <div className="space-x-1">
+                <input
+                  type="text"
+                  value={pagination.page}
+                  onChange={handleChangePage}
+                  className="w-5 text-center bg-transparent outline-none"
+                />
+                <span>of {pagination.totalPage}</span>
+              </div>
+              <div className="flex">
+                <button
+                  disabled={pagination.page === pagination.totalPage}
+                  className="disabled:cursor-not-allowed"
+                  onClick={handleNext}
+                >
+                  <ChevronRight />
+                </button>
+                <ChevronsRight
+                  className="cursor-pointer"
+                  onClick={() =>
+                    setPagination({ ...pagination, page: pagination.totalPage })
+                  }
+                />
+              </div>
             </div>
-            <span>
-              {pagination.page} of {pagination.totalPage}
-            </span>
-            <div className="flex">
-              <button
-                disabled={pagination.page === pagination.totalPage}
-                className="disabled:cursor-not-allowed"
-                onClick={handleNext}
+
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-light">Data per Page</span>
+              <Select
+                value={pagination.perPage}
+                onValueChange={handleChangePerPage}
               >
-                <ChevronRight />
-              </button>
-              <ChevronsRight
-                className="cursor-pointer"
-                onClick={() =>
-                  setPagination({ ...pagination, page: pagination.totalPage })
-                }
-              />
+                <SelectTrigger className="w-16">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={5}>5</SelectItem>
+                  <SelectItem value={10}>10</SelectItem>
+                  <SelectItem value={15}>15</SelectItem>
+                  <SelectItem value={20}>20</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
