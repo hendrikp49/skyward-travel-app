@@ -1,12 +1,5 @@
 import Sidebar from "@/components/Layout/Sidebar";
 import { Button } from "@/components/ui/button";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import { Input } from "@/components/ui/input";
 import { ActivityContext } from "@/contexts/activityContext";
 import { CategoryContext } from "@/contexts/categoryContext";
@@ -57,7 +50,6 @@ const DetailActivity = () => {
     axios
       .post(`${BASE_URL + UPLOAD}`, formData, config)
       .then((res) => {
-        console.log(res);
         setActivityId({
           ...activityId,
           imageUrls: [res.data.url, ...activityId.imageUrls],
@@ -103,10 +95,8 @@ const DetailActivity = () => {
           progress: undefined,
           theme: "dark",
         });
-        setTimeout(() => {
-          handleDataActivity();
-          router.push("/dashboard/activity");
-        }, 2000);
+        handleDataActivity();
+        router.push("/dashboard/activity");
       })
       .catch((err) => console.log(err));
   };
@@ -127,6 +117,12 @@ const DetailActivity = () => {
       placeholder: "Description Activity",
       change: handleChange,
       value: activityId?.description,
+    },
+    {
+      label: "Image Url",
+      name: "imageUrls",
+      type: "file",
+      change: handleChangeImage,
     },
     {
       label: "Category",
@@ -190,12 +186,6 @@ const DetailActivity = () => {
       change: handleChange,
       value: activityId?.total_reviews,
     },
-    {
-      label: "Image Url",
-      name: "imageUrls",
-      type: "file",
-      change: handleChangeImage,
-    },
   ];
 
   useEffect(() => {
@@ -234,7 +224,7 @@ const DetailActivity = () => {
               <img
                 src={activityId.imageUrls[0]}
                 alt={activityId.title}
-                className="object-cover w-full h-32 rounded-md"
+                className="object-cover w-full rounded-md h-44"
               />
             )}
             {dataInput.map((input, index) => (
@@ -258,6 +248,7 @@ const DetailActivity = () => {
                   </select>
                 ) : input.name === "imageUrls" ? (
                   <Input
+                    accept="image/*"
                     onChange={handleChangeImage}
                     className="px-2 py-1 bg-white rounded-lg text-slate-950"
                     type={input.type}

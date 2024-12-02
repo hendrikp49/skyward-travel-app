@@ -8,6 +8,7 @@ import { CREATE_PROMO } from "@/pages/api/promo";
 import { UPLOAD } from "@/pages/api/upload";
 import axios from "axios";
 import { getCookie } from "cookies-next";
+import { X } from "lucide-react";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -103,6 +104,13 @@ const CreatePromo = () => {
       .catch((err) => console.log(err.response));
   };
 
+  const handleDeleteBanner = () => {
+    setUploadImage(null);
+    setImage(null);
+
+    document.getElementById("file-input").value = "";
+  };
+
   const submitData = (e) => {
     e.preventDefault();
 
@@ -136,10 +144,8 @@ const CreatePromo = () => {
           progress: undefined,
           theme: "dark",
         });
-        setTimeout(() => {
-          handleDataPromo();
-          router.push("/dashboard/promo");
-        }, 2000);
+        handleDataPromo();
+        router.push("/dashboard/promo");
       })
       .catch((err) => console.log(err.response));
   };
@@ -168,13 +174,40 @@ const CreatePromo = () => {
             onSubmit={submitData}
             className="grid max-w-sm grid-cols-1 gap-5 p-5 mx-auto border min-w-max rounded-xl"
           >
+            <div className="relative overflow-hidden rounded-lg">
+              <img
+                src={uploadImage}
+                alt={uploadImage && dataPromo.title}
+                className={`object-cover w-full rounded-md h-44 ${
+                  !uploadImage && "bg-slate-400"
+                }`}
+              />
+              <p
+                className={`absolute text-white -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 ${
+                  uploadImage && "hidden"
+                }`}
+              >
+                Preview Image
+              </p>
+              <div
+                onClick={handleDeleteBanner}
+                className={`absolute ${
+                  !uploadImage && "hidden"
+                } p-1 bg-red-500 rounded-full active:scale-90 ease-in-out duration-300 cursor-pointer top-2 right-2`}
+              >
+                <X size={16} />
+              </div>
+            </div>
+
             {dataInput.map((input) => (
               <div className="flex flex-col gap-1">
                 <label htmlFor="name">{input.label}</label>
                 {input.type === "file" ? (
                   <Input
+                    id="file-input"
                     onChange={handleChangeImage}
-                    className="px-2 py-1 rounded-lg text-slate-950 bg-white"
+                    accept="image/*"
+                    className="px-2 py-1 bg-white rounded-lg text-slate-950"
                     type={input.type}
                     name={input.name}
                     placeholder={input.placeholder}

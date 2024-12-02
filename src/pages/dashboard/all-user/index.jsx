@@ -36,8 +36,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/router";
 
 const AllUser = () => {
+  const router = useRouter();
   const { isOpen } = useContext(IsOpenContext);
   const { allUsers, handleDataUser } = useContext(AllUserContext);
   const [statusFilter, setStatusFilter] = useState("");
@@ -135,7 +138,7 @@ const AllUser = () => {
       <main
         className={`flex flex-col items-center self-end justify-center w-full ${
           isOpen ? "ml-[208px]" : "ml-[63px]"
-        }  h-full min-h-screen py-10 font-poppins text-slate-100 overflow-auto ease-linear duration-300 bg-slate-800`}
+        }  h-full min-h-screen py-5 font-poppins text-slate-100 overflow-auto ease-linear duration-300 bg-slate-800`}
       >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
           <h1 className="w-full text-3xl font-bold text-left text-white underline font-playfair-display underline-offset-8">
@@ -154,14 +157,17 @@ const AllUser = () => {
                 <SelectValue placeholder="Select Role" />
               </SelectTrigger>
               <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Role</SelectLabel>
-                  <SelectItem value="all">All Role</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="user">User</SelectItem>
-                </SelectGroup>
+                <SelectItem value="all">All Role</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="user">User</SelectItem>
               </SelectContent>
             </Select>
+            <Button
+              variant="secondary"
+              onClick={() => router.push("/dashboard/all-user/create-user")}
+            >
+              Create New User
+            </Button>
           </div>
 
           <Table>

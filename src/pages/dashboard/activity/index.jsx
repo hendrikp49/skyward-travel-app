@@ -10,6 +10,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -25,8 +33,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ActivityContext } from "@/contexts/activityContext";
+import { CategoryContext } from "@/contexts/categoryContext";
 import { IsOpenContext } from "@/contexts/isOpen";
-import { ACTIVITIES, DELETE_ACTIVITY } from "@/pages/api/activity";
+import { DELETE_ACTIVITY } from "@/pages/api/activity";
 import { API_KEY, BASE_URL } from "@/pages/api/config";
 import axios from "axios";
 import { getCookie } from "cookies-next";
@@ -45,6 +54,9 @@ import "react-toastify/dist/ReactToastify.css";
 
 const Activity = () => {
   const { dataActivity, handleDataActivity } = useContext(ActivityContext);
+  const { dataCategory, handleDataCategory } = useContext(CategoryContext);
+  const [searchName, setSearchName] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const { isOpen } = useContext(IsOpenContext);
   const [pagination, setPagination] = useState({
@@ -53,21 +65,71 @@ const Activity = () => {
     totalPage: 0,
   });
 
-  const allPage = () => {
+  const filteredActivity = dataActivity
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .filter((activity) => {
+      const searchActivity = activity.title
+        .toLowerCase()
+        .includes(searchName.toLowerCase());
+      const filterStatus = statusFilter
+        ? activity.category?.id === statusFilter
+        : true;
+
+      return searchActivity && filterStatus;
+    });
+
+  const handleChangeName = (searchName) => {
+    setSearchName(searchName);
+
+    // Reset halaman ke 1 ketika filter berubah
+    setPagination((prev) => ({
+      ...prev,
+      page: 1,
+    }));
+  };
+
+  const handleChangeFilterStatus = (selectedStatus) => {
+    setStatusFilter(selectedStatus === "all" ? "" : selectedStatus);
+
+    // Reset halaman ke 1 ketika filter berubah
+    setPagination((prev) => ({
+      ...prev,
+      page: 1,
+    }));
+  };
+
+  const calculateTotalPages = () => {
     setPagination({
       ...pagination,
-      totalPage: Math.ceil(dataActivity.length / pagination.perPage),
+      totalPage: Math.ceil(filteredActivity.length / pagination.perPage),
     });
   };
 
-  const nextPage = () => {
+  const handleChangePage = (e) => {
+    setPagination((prev) => ({
+      ...prev,
+      page:
+        !e.target.value || e.target.value === 0 || isNaN(e.target.value)
+          ? 1
+          : parseInt(e.target.value),
+    }));
+  };
+
+  const handleChangePerPage = (perPage) => {
+    setPagination({
+      ...pagination,
+      perPage: perPage,
+    });
+  };
+
+  const handleNext = () => {
     setPagination({
       ...pagination,
       page: pagination.page + 1,
     });
   };
 
-  const prevPage = () => {
+  const handleBack = () => {
     setPagination({
       ...pagination,
       page: pagination.page - 1,
@@ -76,7 +138,7 @@ const Activity = () => {
 
   const firstIndex = pagination.page * pagination.perPage - pagination.perPage;
   const lastIndex = pagination.page * pagination.perPage;
-  const dataActivitiesPage = dataActivity.slice(firstIndex, lastIndex);
+  const dataActivitiesPage = filteredActivity.slice(firstIndex, lastIndex);
 
   const deleteActivity = (id) => {
     const config = {
@@ -115,11 +177,12 @@ const Activity = () => {
 
   useEffect(() => {
     handleDataActivity();
-  }, [pagination.totalPage]);
+    handleDataCategory();
+  }, []);
 
   useEffect(() => {
-    allPage();
-  }, [dataActivity]);
+    calculateTotalPages();
+  }, [searchName, pagination.perPage, dataActivity, statusFilter]);
 
   return (
     <div className="flex">
@@ -128,18 +191,34 @@ const Activity = () => {
       <main
         className={`flex flex-col items-center justify-center w-full ${
           isOpen ? "ml-[208px]" : "ml-[63px]"
-        }  h-screen font-poppins text-slate-100 overflow-auto ease-linear duration-300 bg-slate-800`}
+        }  h-full min-h-screen py-5 font-poppins text-slate-100 overflow-auto ease-linear duration-300 bg-slate-800`}
       >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
           <h1 className="w-full text-3xl font-bold text-left text-white underline font-playfair-display underline-offset-8">
             Activities List
           </h1>
 
-          <div>
-            <Link
-              href={"/dashboard/activity/create-activity"}
-              className="flex justify-end w-full"
-            >
+          <div className="flex justify-between">
+            <Input
+              type="text"
+              placeholder="Search by title"
+              className="w-56 placeholder:text-slate-400"
+              onChange={(e) => handleChangeName(e.target.value)}
+            />
+            <Select onValueChange={handleChangeFilterStatus}>
+              <SelectTrigger className="w-44 ">
+                <SelectValue placeholder="Filter by category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                {dataCategory.map((item) => (
+                  <SelectItem key={item.id} value={item.id}>
+                    {item.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Link href={"/dashboard/activity/create-activity"}>
               <Button variant="secondary">Create Activity</Button>
             </Link>
           </div>
@@ -224,37 +303,63 @@ const Activity = () => {
             </TableBody>
           </Table>
 
-          <div className="flex gap-3">
-            <div className="flex">
-              <ChevronsLeft
-                onClick={() => setPagination({ ...pagination, page: 1 })}
-                className="cursor-pointer"
-              />
-              <button
-                disabled={pagination.page === 1}
-                className="disabled:cursor-not-allowed"
-                onClick={prevPage}
-              >
-                <ChevronLeft />
-              </button>
+          <div className="flex justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex">
+                <ChevronsLeft
+                  onClick={() => setPagination({ ...pagination, page: 1 })}
+                  className="cursor-pointer"
+                />
+                <button
+                  disabled={pagination.page === 1}
+                  className="disabled:cursor-not-allowed"
+                  onClick={handleBack}
+                >
+                  <ChevronLeft />
+                </button>
+              </div>
+              <div className="space-x-1">
+                <input
+                  type="text"
+                  value={pagination.page}
+                  onChange={handleChangePage}
+                  className="w-5 text-center bg-transparent outline-none"
+                />
+                <span>of {pagination.totalPage}</span>
+              </div>
+              <div className="flex">
+                <button
+                  disabled={pagination.page === pagination.totalPage}
+                  className="disabled:cursor-not-allowed"
+                  onClick={handleNext}
+                >
+                  <ChevronRight />
+                </button>
+                <ChevronsRight
+                  className="cursor-pointer"
+                  onClick={() =>
+                    setPagination({ ...pagination, page: pagination.totalPage })
+                  }
+                />
+              </div>
             </div>
-            <span>
-              {pagination.page} of {pagination.totalPage}
-            </span>
-            <div className="flex">
-              <button
-                disabled={pagination.page === pagination.totalPage}
-                className="disabled:cursor-not-allowed"
-                onClick={nextPage}
+
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-light">Data per Page</span>
+              <Select
+                value={pagination.perPage}
+                onValueChange={handleChangePerPage}
               >
-                <ChevronRight />
-              </button>
-              <ChevronsRight
-                className="cursor-pointer"
-                onClick={() =>
-                  setPagination({ ...pagination, page: pagination.totalPage })
-                }
-              />
+                <SelectTrigger className="w-16">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={5}>5</SelectItem>
+                  <SelectItem value={10}>10</SelectItem>
+                  <SelectItem value={15}>15</SelectItem>
+                  <SelectItem value={20}>20</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>

@@ -9,6 +9,7 @@ import { BASE_URL, API_KEY } from "@/pages/api/config";
 import { UPLOAD } from "@/pages/api/upload";
 import axios from "axios";
 import { getCookie } from "cookies-next";
+import { X } from "lucide-react";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -65,6 +66,13 @@ const CreateActivity = () => {
       .catch((err) => console.log(err.response));
   };
 
+  const handleDeleteBanner = () => {
+    setUploadImage(null);
+    setImage(null);
+
+    document.getElementById("file-input").value = "";
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -102,10 +110,8 @@ const CreateActivity = () => {
           progress: undefined,
           theme: "dark",
         });
-        setTimeout(() => {
-          handleDataActivity();
-          router.push("/dashboard/activity");
-        }, 2000);
+        handleDataActivity();
+        router.push("/dashboard/activity");
       })
       .catch((err) => console.log(err.response));
   };
@@ -124,6 +130,13 @@ const CreateActivity = () => {
       type: "text",
       placeholder: "Favorite place in Bali",
       change: handleChange,
+    },
+    {
+      label: "Image Url",
+      name: "imageUrls",
+      type: "file",
+      placeholder: "",
+      change: handleChangeImage,
     },
     {
       label: "Category",
@@ -179,13 +192,6 @@ const CreateActivity = () => {
       placeholder: "150",
       change: handleChange,
     },
-    {
-      label: "Image Url",
-      name: "imageUrls",
-      type: "file",
-      placeholder: "",
-      change: handleChangeImage,
-    },
   ];
 
   useEffect(() => {
@@ -217,6 +223,31 @@ const CreateActivity = () => {
             onSubmit={handleSubmit}
             className="grid max-w-sm grid-cols-1 gap-5 p-5 mx-auto border md:max-w-lg rounded-xl"
           >
+            <div className="relative overflow-hidden rounded-lg">
+              <img
+                src={uploadImage}
+                alt={uploadImage && dataActivity.title}
+                className={`object-cover w-full rounded-md h-44 ${
+                  !uploadImage && "bg-slate-400"
+                }`}
+              />
+              <p
+                className={`absolute text-white -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 ${
+                  uploadImage && "hidden"
+                }`}
+              >
+                Preview Image
+              </p>
+              <div
+                onClick={handleDeleteBanner}
+                className={`absolute ${
+                  !uploadImage && "hidden"
+                } p-1 bg-red-500 rounded-full active:scale-90 ease-in-out duration-300 cursor-pointer top-2 right-2`}
+              >
+                <X size={16} />
+              </div>
+            </div>
+
             {dataInput.map((input, index) => (
               <div key={index} className="flex flex-col gap-1">
                 <label htmlFor="name">{input.label}</label>
@@ -237,6 +268,8 @@ const CreateActivity = () => {
                   </select>
                 ) : input.name === "imageUrls" ? (
                   <Input
+                    id="file-input"
+                    accept="image/*"
                     onChange={handleChangeImage}
                     className="px-2 py-1 bg-white rounded-lg text-slate-950"
                     type={input.type}

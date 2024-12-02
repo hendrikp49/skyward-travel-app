@@ -7,6 +7,7 @@ import { API_KEY, BASE_URL } from "@/pages/api/config";
 import { UPLOAD } from "@/pages/api/upload";
 import axios from "axios";
 import { getCookie } from "cookies-next";
+import { X } from "lucide-react";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -66,6 +67,12 @@ const DetailCategory = () => {
       .catch((err) => console.log(err.response));
   };
 
+  const handleDeleteBanner = () => {
+    setDataCategory({ ...dataCategory, imageUrl: "" });
+
+    document.getElementById("file-input").value = "";
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -94,9 +101,7 @@ const DetailCategory = () => {
           progress: undefined,
           theme: "dark",
         });
-        setTimeout(() => {
-          router.push("/dashboard/category");
-        }, 2000);
+        router.push("/dashboard/category");
       })
       .catch((err) => console.log(err.response));
   };
@@ -133,7 +138,7 @@ const DetailCategory = () => {
       <main
         className={`flex flex-col items-center justify-center w-full ${
           isOpen ? "ml-[208px]" : "ml-[63px]"
-        }  h-screen font-poppins text-slate-100 py-2 ease-linear duration-300 bg-slate-800`}
+        }  h-full min-h-screen font-poppins text-slate-100 py-2 ease-linear duration-300 bg-slate-800`}
       >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
           <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">
@@ -144,16 +149,38 @@ const DetailCategory = () => {
             onSubmit={handleSubmit}
             className="max-w-sm p-5 mx-auto space-y-3 border rounded-xl"
           >
-            <img
-              src={dataCategory?.imageUrl}
-              alt={dataCategory?.name}
-              className="object-cover w-full rounded-md h-44"
-            />
+            <div className="relative overflow-hidden rounded-lg">
+              <img
+                src={dataCategory?.imageUrl}
+                alt={dataCategory?.imageUrl && dataCategory?.name}
+                className={`object-cover w-full rounded-md h-44 ${
+                  !dataCategory?.imageUrl && "bg-slate-400"
+                }`}
+              />
+              <p
+                className={`absolute text-white -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 ${
+                  dataCategory?.imageUrl && "hidden"
+                }`}
+              >
+                Preview Image
+              </p>
+              <div
+                onClick={handleDeleteBanner}
+                className={`absolute ${
+                  !dataCategory?.imageUrl && "hidden"
+                } p-1 bg-red-500 rounded-full active:scale-90 ease-in-out duration-300 cursor-pointer top-2 right-2`}
+              >
+                <X size={16} />
+              </div>
+            </div>
+
             {dataInput.map((input, index) => (
               <div key={index} className="flex flex-col gap-1">
                 <label>{input.label}</label>
                 {input.type === "file" ? (
                   <Input
+                    id="file-input"
+                    accept="image/*"
                     onChange={handleChangeImage}
                     type={input.type}
                     className="bg-white rounded-lg text-slate-950"
@@ -178,30 +205,6 @@ const DetailCategory = () => {
         </div>
       </main>
     </div>
-    // <div>
-    //   <img
-    //     src={dataCategory.imageUrl}
-    //     alt={dataCategory.name}
-    //     className="w-24 aspect-square"
-    //   />
-    //   <form onSubmit={handleSubmit}>
-    //     <input
-    //       onChange={handleChange}
-    //       type="text"
-    //       name="name"
-    //       value={dataCategory.name}
-    //       className="border"
-    //     />
-    //     <input
-    //       onChange={handleChange}
-    //       type="text"
-    //       name="imageUrl"
-    //       value={dataCategory.imageUrl}
-    //       className="border"
-    //     />
-    //     <button type="submit">Save</button>
-    //   </form>
-    // </div>
   );
 };
 

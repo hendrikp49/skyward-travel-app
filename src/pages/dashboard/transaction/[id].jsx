@@ -1,4 +1,3 @@
-// import dynamic from "next/dynamic";
 import Sidebar from "@/components/Layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import {
@@ -102,20 +101,6 @@ const DetailTransaction = () => {
   };
 
   const handleEditStatusTransaction = () => {
-    if (dataTransaction.status !== "pending") {
-      toast.warning("Just pending transaction can be updated", {
-        position: "bottom-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
-      return;
-    }
-
     const config = {
       headers: {
         apiKey: API_KEY,
@@ -153,20 +138,6 @@ const DetailTransaction = () => {
   };
 
   const cancelTransaction = () => {
-    if (dataTransaction.status !== "pending") {
-      toast.warning("Just pending transaction can be cancelled", {
-        position: "bottom-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
-      return;
-    }
-
     const config = {
       headers: {
         apiKey: API_KEY,

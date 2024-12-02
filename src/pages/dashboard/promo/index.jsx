@@ -42,10 +42,19 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { IsOpenContext } from "@/contexts/isOpen";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 const Promo = () => {
   const { dataPromo, handleDataPromo } = useContext(PromoContext);
   const { isOpen } = useContext(IsOpenContext);
+  const [searchName, setSearchName] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -53,17 +62,50 @@ const Promo = () => {
     totalPage: 0,
   });
 
-  const allPage = () => {
+  const filteredPromo = dataPromo
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .filter((promo) =>
+      promo.title.toLowerCase().includes(searchName.toLowerCase())
+    );
+
+  const handleChangeName = (searchName) => {
+    setSearchName(searchName);
+
+    // Reset halaman ke 1 ketika filter berubah
+    setPagination((prev) => ({
+      ...prev,
+      page: 1,
+    }));
+  };
+
+  const calculateTotalPages = () => {
     setPagination({
       ...pagination,
-      totalPage: Math.ceil(dataPromo.length / pagination.perPage),
+      totalPage: Math.ceil(filteredPromo.length / pagination.perPage),
+    });
+  };
+
+  const handleChangePage = (e) => {
+    setPagination((prev) => ({
+      ...prev,
+      page:
+        !e.target.value || e.target.value === 0 || isNaN(e.target.value)
+          ? 1
+          : parseInt(e.target.value),
+    }));
+  };
+
+  const handleChangePerPage = (perPage) => {
+    setPagination({
+      ...pagination,
+      perPage: perPage,
     });
   };
 
   const firstIndexData =
     pagination.page * pagination.perPage - pagination.perPage;
   const lastIndexData = pagination.page * pagination.perPage;
-  const dataPromoPage = dataPromo.slice(firstIndexData, lastIndexData);
+  const dataPromoPage = filteredPromo.slice(firstIndexData, lastIndexData);
 
   const handleNext = () => {
     setPagination({
@@ -111,11 +153,11 @@ const Promo = () => {
 
   useEffect(() => {
     handleDataPromo();
-  }, [pagination.totalPage]);
+  }, []);
 
   useEffect(() => {
-    allPage();
-  }, [dataPromo]);
+    calculateTotalPages();
+  }, [searchName, pagination.perPage, dataPromo]);
 
   return (
     <div className="flex">
@@ -124,14 +166,20 @@ const Promo = () => {
       <main
         className={`flex flex-col items-center justify-center w-full ${
           isOpen ? "ml-[208px]" : "ml-[63px]"
-        }  h-screen font-poppins text-slate-100 overflow-auto ease-linear duration-300 bg-slate-800`}
+        }  h-full min-h-screen font-poppins py-5 text-slate-100 overflow-auto ease-linear duration-300 bg-slate-800`}
       >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
           <h1 className="w-full text-3xl font-bold text-left text-white underline font-playfair-display underline-offset-8">
             Promo List
           </h1>
 
-          <div>
+          <div className="flex justify-between">
+            <Input
+              type="text"
+              placeholder="Search by title"
+              className="w-56 placeholder:text-slate-400"
+              onChange={(e) => handleChangeName(e.target.value)}
+            />
             <Link
               href={"/dashboard/promo/create-promo"}
               className="flex justify-end w-full"
@@ -224,37 +272,61 @@ const Promo = () => {
             </TableBody>
           </Table>
 
-          <div className="flex gap-3">
-            <div className="flex">
-              <ChevronsLeft
-                onClick={() => setPagination({ ...pagination, page: 1 })}
-                className="cursor-pointer"
-              />
-              <button
-                disabled={pagination.page === 1}
-                className="disabled:cursor-not-allowed"
-                onClick={handleBack}
-              >
-                <ChevronLeft />
-              </button>
+          <div className="flex justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex">
+                <ChevronsLeft
+                  onClick={() => setPagination({ ...pagination, page: 1 })}
+                  className="cursor-pointer"
+                />
+                <button
+                  disabled={pagination.page === 1}
+                  className="disabled:cursor-not-allowed"
+                  onClick={handleBack}
+                >
+                  <ChevronLeft />
+                </button>
+              </div>
+              <div className="space-x-1">
+                <input
+                  type="text"
+                  value={pagination.page}
+                  onChange={handleChangePage}
+                  className="w-5 text-center bg-transparent outline-none"
+                />
+                <span>of {pagination.totalPage}</span>
+              </div>
+              <div className="flex">
+                <button
+                  disabled={pagination.page === pagination.totalPage}
+                  className="disabled:cursor-not-allowed"
+                  onClick={handleNext}
+                >
+                  <ChevronRight />
+                </button>
+                <ChevronsRight
+                  className="cursor-pointer"
+                  onClick={() =>
+                    setPagination({ ...pagination, page: pagination.totalPage })
+                  }
+                />
+              </div>
             </div>
-            <span>
-              {pagination.page} of {pagination.totalPage}
-            </span>
-            <div className="flex">
-              <button
-                disabled={pagination.page === pagination.totalPage}
-                className="disabled:cursor-not-allowed"
-                onClick={handleNext}
+
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-light">Data per Page</span>
+              <Select
+                value={pagination.perPage}
+                onValueChange={handleChangePerPage}
               >
-                <ChevronRight />
-              </button>
-              <ChevronsRight
-                className="cursor-pointer"
-                onClick={() =>
-                  setPagination({ ...pagination, page: pagination.totalPage })
-                }
-              />
+                <SelectTrigger className="w-16">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={5}>5</SelectItem>
+                  <SelectItem value={10}>10</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>

@@ -8,6 +8,7 @@ import { PROMO_ID, UPDATE_PROMO } from "@/pages/api/promo";
 import { UPLOAD } from "@/pages/api/upload";
 import axios from "axios";
 import { getCookie } from "cookies-next";
+import { X } from "lucide-react";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -104,6 +105,12 @@ const DetailPromo = () => {
       .catch((err) => console.log(err.response));
   };
 
+  const handleDeleteBanner = () => {
+    setPromoId({ ...promoId, imageUrl: "" });
+
+    document.getElementById("file-input").value = "";
+  };
+
   const editPromo = (e) => {
     e.preventDefault();
 
@@ -137,10 +144,8 @@ const DetailPromo = () => {
           progress: undefined,
           theme: "dark",
         });
-        setTimeout(() => {
-          handleDataPromo();
-          router.push("/dashboard/promo");
-        }, 2000);
+        handleDataPromo();
+        router.push("/dashboard/promo");
       })
       .catch((err) => console.log(err.response));
   };
@@ -176,17 +181,38 @@ const DetailPromo = () => {
             onSubmit={editPromo}
             className="grid max-w-sm grid-cols-1 gap-5 p-5 mx-auto border min-w-max rounded-xl"
           >
-            <img
-              src={promoId?.imageUrl}
-              alt={promoId?.title}
-              className="object-cover w-full h-32 rounded-md"
-            />
+            <div className="relative overflow-hidden rounded-lg">
+              <img
+                src={promoId?.imageUrl}
+                alt={promoId?.imageUrl && promoId?.title}
+                className={`object-cover w-full rounded-md h-44 ${
+                  !promoId?.imageUrl && "bg-slate-400"
+                }`}
+              />
+              <p
+                className={`absolute text-white -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 ${
+                  promoId?.imageUrl && "hidden"
+                }`}
+              >
+                Preview Image
+              </p>
+              <div
+                onClick={handleDeleteBanner}
+                className={`absolute ${
+                  !promoId?.imageUrl && "hidden"
+                } p-1 bg-red-500 rounded-full active:scale-90 ease-in-out duration-300 cursor-pointer top-2 right-2`}
+              >
+                <X size={16} />
+              </div>
+            </div>
             {dataInput.map((input, index) => (
               <div key={index} className="flex flex-col gap-1">
                 <label htmlFor="name">{input.label}</label>
                 {input.type === "file" ? (
                   <Input
+                    id="file-input"
                     onChange={handleChangeImage}
+                    accept="image/*"
                     className="px-2 py-1 bg-white rounded-lg text-slate-950"
                     type={input.type}
                     name={input.name}

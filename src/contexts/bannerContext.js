@@ -1,7 +1,7 @@
 import { ALL_BANNER } from "@/pages/api/banner";
 import { API_KEY, BASE_URL } from "@/pages/api/config";
 import axios from "axios";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 
 export const BannerContext = createContext();
 

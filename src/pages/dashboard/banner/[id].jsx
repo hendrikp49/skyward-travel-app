@@ -8,6 +8,7 @@ import { API_KEY, BASE_URL } from "@/pages/api/config";
 import { UPLOAD } from "@/pages/api/upload";
 import axios from "axios";
 import { getCookie } from "cookies-next";
+import { X } from "lucide-react";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -67,6 +68,12 @@ const DetailBanner = () => {
       .catch((err) => console.log(err.response));
   };
 
+  const handleDeleteBanner = () => {
+    setBannerId({ ...bannerId, imageUrl: "" });
+
+    document.getElementById("file-input").value = "";
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -95,11 +102,8 @@ const DetailBanner = () => {
           progress: undefined,
           theme: "dark",
         });
-
-        setTimeout(() => {
-          handleDataBanner();
-          router.push("/dashboard/banner");
-        }, 2000);
+        handleDataBanner();
+        router.push("/dashboard/banner");
       })
       .catch((err) => console.log(err.response));
   };
@@ -124,7 +128,7 @@ const DetailBanner = () => {
       <main
         className={`flex flex-col items-center justify-center w-full ${
           isOpen ? "ml-[208px]" : "ml-[63px]"
-        }  h-screen font-poppins text-slate-100 ease-linear duration-300 bg-slate-800`}
+        }  h-full min-h-screen font-poppins text-slate-100 ease-linear duration-300 bg-slate-800`}
       >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl">
           <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">
@@ -135,16 +139,36 @@ const DetailBanner = () => {
             onSubmit={handleSubmit}
             className="max-w-sm p-5 mx-auto space-y-3 border rounded-xl"
           >
-            <img
-              src={bannerId?.imageUrl}
-              alt={bannerId?.name}
-              className="object-cover w-full rounded-md h-44"
-            />
+            <div className="relative overflow-hidden rounded-lg">
+              <img
+                src={bannerId?.imageUrl}
+                alt={bannerId?.imageUrl && bannerId?.name}
+                className={`object-cover w-full rounded-md h-44 ${
+                  !bannerId?.imageUrl && "bg-slate-400"
+                }`}
+              />
+              <p
+                className={`absolute text-white -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 ${
+                  bannerId?.imageUrl && "hidden"
+                }`}
+              >
+                Preview Image
+              </p>
+              <div
+                onClick={handleDeleteBanner}
+                className={`absolute ${
+                  !bannerId?.imageUrl && "hidden"
+                } p-1 bg-red-500 rounded-full active:scale-90 ease-in-out duration-300 cursor-pointer top-2 right-2`}
+              >
+                <X size={16} />
+              </div>
+            </div>
             {dataInput.map((input, index) => (
               <div key={index} className="flex flex-col gap-1">
                 <label>{input.label}</label>
                 {input.type === "file" ? (
                   <Input
+                    id="file-input"
                     onChange={handleChangeImage}
                     className="px-2 py-1 bg-white rounded-lg text-slate-950"
                     type={input.type}

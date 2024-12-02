@@ -47,16 +47,18 @@ const AllTransaction = () => {
     totalPage: 0,
   });
 
-  const filteredTransactions = allTransaction.filter((transaction) => {
-    const filterStatus = statusFilter
-      ? transaction.status === statusFilter
-      : true;
-    const findInvoice = transaction.invoiceId
-      .toLowerCase()
-      .includes(searchInvoice.toLowerCase());
+  const filteredTransactions = allTransaction
+    .sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate))
+    .filter((transaction) => {
+      const filterStatus = statusFilter
+        ? transaction.status === statusFilter
+        : true;
+      const findInvoice = transaction.invoiceId
+        .toLowerCase()
+        .includes(searchInvoice.toLowerCase());
 
-    return filterStatus && findInvoice;
-  });
+      return filterStatus && findInvoice;
+    });
 
   const calculateTotalPages = () => {
     setPagination((prev) => ({
@@ -153,7 +155,7 @@ const AllTransaction = () => {
               value={statusFilter}
               onValueChange={handleStatusFilterChange}
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-40">
                 <SelectValue placeholder="Filter by Status" />
               </SelectTrigger>
               <SelectContent>
