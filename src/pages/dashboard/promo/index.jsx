@@ -166,10 +166,10 @@ const Promo = () => {
       <main
         className={`flex flex-col items-center justify-center w-full ${
           isOpen ? "ml-[208px]" : "ml-[63px]"
-        }  h-full min-h-screen font-poppins py-5 text-slate-100 overflow-auto ease-linear duration-300 bg-slate-800`}
+        }  h-full min-h-screen font-poppins py-5 text-slate-800 overflow-auto ease-linear duration-300 `}
       >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
-          <h1 className="w-full text-3xl font-bold text-left text-white underline font-playfair-display underline-offset-8">
+          <h1 className="w-full text-3xl font-bold text-left text-slate-800 underline font-playfair-display underline-offset-8">
             Promo List
           </h1>
 
@@ -189,7 +189,7 @@ const Promo = () => {
           </div>
 
           <Table>
-            <TableHeader className="bg-skyward-tertiary">
+            <TableHeader className="bg-skyward-primary">
               <TableRow className="text-left">
                 <TableHead>Picture</TableHead>
                 <TableHead>Title</TableHead>

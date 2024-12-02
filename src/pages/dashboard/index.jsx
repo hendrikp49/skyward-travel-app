@@ -39,7 +39,7 @@ const Dashboard = () => {
       <main
         className={`flex flex-col items-center justify-center w-full ${
           isOpen ? "ml-[208px]" : "ml-[63px]"
-        }  h-screen font-poppins text-slate-100 ease-linear duration-300 bg-slate-800`}
+        }  h-screen font-poppins text-slate-800 ease-linear duration-300`}
       >
         <h1 className="text-3xl font-medium text-center font-casser md:text-5xl">
           Welcome Back, {user.name}

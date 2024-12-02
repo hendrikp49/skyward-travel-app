@@ -138,16 +138,16 @@ const DetailCategory = () => {
       <main
         className={`flex flex-col items-center justify-center w-full ${
           isOpen ? "ml-[208px]" : "ml-[63px]"
-        }  h-full min-h-screen font-poppins text-slate-100 py-2 ease-linear duration-300 bg-slate-800`}
+        }  h-full min-h-screen font-poppins text-slate-800 py-2 ease-linear duration-300 `}
       >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
-          <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">
+          <h1 className="w-full text-3xl font-bold text-center underline text-slate-800 font-playfair-display underline-offset-8">
             Edit Category
           </h1>
 
           <form
             onSubmit={handleSubmit}
-            className="max-w-sm p-5 mx-auto space-y-3 border rounded-xl"
+            className="max-w-sm p-5 mx-auto space-y-3 border shadow-sm shadow-slate-400 rounded-xl"
           >
             <div className="relative overflow-hidden rounded-lg">
               <img
@@ -158,7 +158,7 @@ const DetailCategory = () => {
                 }`}
               />
               <p
-                className={`absolute text-white -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 ${
+                className={`absolute text-slate-800 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 ${
                   dataCategory?.imageUrl && "hidden"
                 }`}
               >
@@ -170,7 +170,7 @@ const DetailCategory = () => {
                   !dataCategory?.imageUrl && "hidden"
                 } p-1 bg-red-500 rounded-full active:scale-90 ease-in-out duration-300 cursor-pointer top-2 right-2`}
               >
-                <X size={16} />
+                <X size={16} color="white" />
               </div>
             </div>
 
@@ -188,7 +188,7 @@ const DetailCategory = () => {
                 ) : (
                   <input
                     onChange={handleChange}
-                    className="px-2 py-1 rounded-lg text-slate-950"
+                    className="px-2 py-1 border rounded-lg text-slate-950"
                     type={input.type}
                     name={input.name}
                     value={input.value}

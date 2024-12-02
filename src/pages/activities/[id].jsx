@@ -108,7 +108,7 @@ const DetailActivity = () => {
   }, [router.query.id]);
 
   return (
-    <div className=" font-raleway">
+    <div className="font-raleway">
       <NavbarUser />
 
       <div className="mt-10">
@@ -136,7 +136,6 @@ const DetailActivity = () => {
                   }
                 />
               ))}
-              {/* <span>{rating(dataActivity.rating)}</span> */}
               <span>({dataActivity.total_reviews} reviews)</span>
             </div>
             {dataActivity.imageUrls && (
@@ -156,6 +155,7 @@ const DetailActivity = () => {
                 <h4 className="text-xl font-medium ">{item.name}</h4>
                 {item.name === "Tour Map" ? (
                   <div
+                    className="overflow-auto"
                     dangerouslySetInnerHTML={{
                       __html: item.ket,
                     }}

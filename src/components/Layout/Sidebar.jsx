@@ -153,7 +153,7 @@ const Sidebar = () => {
     <aside
       className={`h-screen fixed inline-block py-5 pl-2 ${
         isOpen ? "pr-10 w-52" : "pr-2 w-16"
-      }  space-y-10 bg-skyward-tertiary ease-linear font-raleway duration-300`}
+      }  space-y-10 bg-skyward-primary ease-linear font-raleway duration-300`}
     >
       <div className="flex flex-col justify-between h-full transition-all duration-200 ease-in-out transform">
         <div className="space-y-10 overflow-hidden">
@@ -162,7 +162,7 @@ const Sidebar = () => {
               <>
                 <button onClick={handleOpen}>{close}</button>
                 <p className="text-xl font-bold md:text-2xl font-casser">
-                  <span className="text-skyward-primary">Sky</span>ward
+                  <span>Sky</span>ward
                 </p>
               </>
             ) : (
@@ -177,8 +177,8 @@ const Sidebar = () => {
               <Link
                 key={index}
                 href={item.link}
-                className={`flex gap-3 p-3 rounded-md hover:bg-neutral-200 ${
-                  pathname === item.link && "bg-neutral-200"
+                className={`flex gap-3 p-3 rounded-md hover:bg-neutral-50 ${
+                  pathname === item.link && "bg-neutral-50"
                 }`}
               >
                 <TooltipProvider>

@@ -203,22 +203,22 @@ const DetailActivity = () => {
   }, [image]);
 
   return (
-    <div className="flex bg-slate-800">
+    <div className="flex">
       <Sidebar />
 
       <main
         className={`flex flex-col items-center justify-center w-full ${
           isOpen ? "ml-[208px]" : "ml-[63px]"
-        }  h-full font-poppins text-slate-100 overflow-auto py-5 ease-linear duration-300 bg-slate-800`}
+        }  h-full font-poppins text-slate-800 overflow-auto py-5 ease-linear duration-300`}
       >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
-          <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">
+          <h1 className="w-full text-3xl font-bold text-center underline text-slate-800 font-playfair-display underline-offset-8">
             Edit Activity
           </h1>
 
           <form
             onSubmit={handleEditActivity}
-            className="grid max-w-sm grid-cols-1 gap-5 p-5 mx-auto border md:max-w-lg rounded-xl"
+            className="grid max-w-sm grid-cols-1 gap-5 p-5 mx-auto border shadow-sm shadow-slate-400 md:max-w-lg rounded-xl"
           >
             {activityId?.imageUrls?.length > 0 && (
               <img
@@ -233,7 +233,7 @@ const DetailActivity = () => {
                 {input.name === "categoryId" ? (
                   <select
                     onChange={input.change}
-                    className="px-2 py-1 rounded-lg text-slate-950"
+                    className="px-2 py-1 border rounded-lg text-slate-950"
                     name={input.name}
                     value={input.value}
                   >
@@ -257,7 +257,7 @@ const DetailActivity = () => {
                 ) : (
                   <input
                     onChange={input.change}
-                    className="px-2 py-1 rounded-lg text-slate-950"
+                    className="px-2 py-1 border rounded-lg text-slate-950"
                     type={input.type}
                     name={input.name}
                     placeholder={input.placeholder}

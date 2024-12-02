@@ -22,6 +22,7 @@ const Home = () => {
   const { dataActivity, handleDataActivity } = useContext(ActivityContext);
   const { dataBanner, handleDataBanner } = useContext(BannerContext);
   const { dataPromo, handleDataPromo } = useContext(PromoContext);
+  const activityFilter = dataActivity.slice(0, 6);
   const bannerFilter = dataBanner.slice(0, 4);
   const promoFilter = dataPromo.slice(0, 6);
   const dataDifference = [
@@ -167,8 +168,8 @@ const Home = () => {
               align: "start",
             }}
           >
-            <CarouselContent className="">
-              {dataActivity.map((activity) => (
+            <CarouselContent>
+              {activityFilter.map((activity) => (
                 <CarouselItem
                   key={activity.id}
                   className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
@@ -239,17 +240,17 @@ const Home = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
+            <CarouselPrevious className="hidden lg:flex" />
+            <CarouselNext className="hidden lg:flex" />
           </Carousel>
-          <Link
+          {/* <Link
             href={"/activities"}
             className="flex justify-center mx-auto w-fit"
           >
             <Button variant="secondary" className="px-10">
               See All Activities
             </Button>
-          </Link>
+          </Link> */}
         </section>
 
         {/* Offers */}

@@ -66,22 +66,22 @@ const UpdateRole = () => {
   }, [router.query.id]);
 
   return (
-    <div className="flex h-screen lg:h-auto bg-slate-800">
+    <div className="flex h-screen lg:h-auto ">
       <Sidebar />
 
       <main
         className={`flex flex-col items-center self-end justify-center w-full ${
           isOpen ? "ml-[208px]" : "ml-[63px]"
-        }  h-full font-poppins text-slate-100 overflow-auto py-5 ease-linear duration-300 bg-slate-800`}
+        }  h-full font-poppins text-slate-800 overflow-auto py-5 ease-linear duration-300 `}
       >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
-          <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">
+          <h1 className="w-full text-3xl font-bold text-center underline text-slate-800 font-playfair-display underline-offset-8">
             Edit Role User
           </h1>
 
           <form
             onSubmit={handleSubmit}
-            className="max-w-sm p-5 mx-auto space-y-3 border rounded-xl"
+            className="max-w-sm p-5 mx-auto space-y-3 border shadow-sm shadow-slate-400 rounded-xl"
           >
             <div className="overflow-hidden">
               <img

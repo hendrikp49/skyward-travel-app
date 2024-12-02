@@ -164,22 +164,22 @@ const DetailPromo = () => {
   }, [image]);
 
   return (
-    <div className="flex bg-slate-800 md:h-screen lg:h-auto">
+    <div className="flex md:h-screen lg:h-auto">
       <Sidebar />
 
       <main
         className={`flex flex-col items-center justify-center w-full ${
           isOpen ? "ml-[208px]" : "ml-[63px]"
-        }  h-full font-poppins text-slate-100 overflow-auto ease-linear duration-300 bg-slate-800 py-2`}
+        }  h-full font-poppins text-slate-800 overflow-auto ease-linear duration-300  py-2`}
       >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out md:max-w-xl lg:max-w-4xl min-w-fit">
-          <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">
+          <h1 className="w-full text-3xl font-bold text-center underline text-slate-800 font-playfair-display underline-offset-8">
             Edit Promo
           </h1>
 
           <form
             onSubmit={editPromo}
-            className="grid max-w-sm grid-cols-1 gap-5 p-5 mx-auto border min-w-max rounded-xl"
+            className="grid max-w-sm grid-cols-1 gap-5 p-5 mx-auto border shadow-sm shadow-slate-400 min-w-max rounded-xl"
           >
             <div className="relative overflow-hidden rounded-lg">
               <img
@@ -190,7 +190,7 @@ const DetailPromo = () => {
                 }`}
               />
               <p
-                className={`absolute text-white -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 ${
+                className={`absolute text-slate-800 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 ${
                   promoId?.imageUrl && "hidden"
                 }`}
               >
@@ -202,7 +202,7 @@ const DetailPromo = () => {
                   !promoId?.imageUrl && "hidden"
                 } p-1 bg-red-500 rounded-full active:scale-90 ease-in-out duration-300 cursor-pointer top-2 right-2`}
               >
-                <X size={16} />
+                <X size={16} color="white" />
               </div>
             </div>
             {dataInput.map((input, index) => (
@@ -221,7 +221,7 @@ const DetailPromo = () => {
                 ) : (
                   <input
                     onChange={handleChange}
-                    className="px-2 py-1 rounded-lg text-slate-950"
+                    className="px-2 py-1 border rounded-lg text-slate-950"
                     type={input.type}
                     name={input.name}
                     placeholder={input.placeholder}

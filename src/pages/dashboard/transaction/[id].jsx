@@ -196,14 +196,14 @@ const DetailTransaction = () => {
       <main
         className={`flex flex-col items-center overflow-auto justify-center w-full ${
           isOpen ? "ml-[208px]" : "ml-[63px]"
-        }  h-screen font-poppins py-2 ease-linear duration-300 bg-slate-800`}
+        }  h-screen font-poppins py-2 ease-linear duration-300`}
       >
         <div className="w-full max-w-sm px-5 mx-auto space-y-10 duration-200 ease-in-out min-w-max md:max-w-2xl lg:max-w-4xl">
-          <h1 className="w-full text-3xl font-bold text-center text-white underline font-playfair-display underline-offset-8">
+          <h1 className="w-full text-3xl font-bold text-center underline text-slate-800 font-playfair-display underline-offset-8">
             Transaction Details
           </h1>
 
-          <div className="grid max-w-sm grid-cols-2 gap-5 p-5 mx-auto border shadow-md shadow-orange-400 bg-slate-100 rounded-xl">
+          <div className="grid max-w-sm grid-cols-2 gap-5 p-5 mx-auto border shadow-sm shadow-slate-400 bg-slate-100 rounded-xl">
             {dataInput.map((input, index) => (
               <div
                 key={index}
