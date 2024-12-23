@@ -243,14 +243,6 @@ const Home = () => {
             <CarouselPrevious className="hidden lg:flex" />
             <CarouselNext className="hidden lg:flex" />
           </Carousel>
-          {/* <Link
-            href={"/activities"}
-            className="flex justify-center mx-auto w-fit"
-          >
-            <Button variant="secondary" className="px-10">
-              See All Activities
-            </Button>
-          </Link> */}
         </section>
 
         {/* Offers */}
